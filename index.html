@@ -525,121 +525,138 @@
         pointer-events: none;
       }
 
-      /* ===== MAZE RUNNER PUZZLE STYLES ===== */
-      .mazePuzzleContainer {
+      /* ===== KICK BOXING STYLES ===== */
+      .kickGloves {
         position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 320px;
-        height: 320px;
-        z-index: 35;
-        border-radius: 16px;
-        border: 2px solid rgba(128, 128, 128, 0.6);
-        background: linear-gradient(135deg, rgba(64, 64, 64, 0.9), rgba(32, 32, 32, 0.95));
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        pointer-events: auto;
-        overflow: hidden;
+        bottom: 120px;
+        right: 20px;
+        display: flex;
+        gap: 8px;
+        z-index: 32;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        pointer-events: none;
       }
 
-      .puzzleTitle {
+      .kickGloves.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .glove {
+        width: 40px;
+        height: 50px;
+        border-radius: 25px 25px 20px 20px;
+        background: linear-gradient(135deg, rgba(255, 43, 214, 0.9), rgba(255, 43, 214, 0.7));
+        border: 2px solid rgba(128, 0, 128, 0.8);
+        box-shadow: 0 4px 16px rgba(255, 43, 214, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.2);
+        position: relative;
+        animation: gloveFloat 3s ease-in-out infinite;
+      }
+
+      .glove:nth-child(2) {
+        animation-delay: 0.5s;
+      }
+
+      .glove::before {
+        content: '';
         position: absolute;
         top: 8px;
-        left: 12px;
-        right: 12px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: rgba(255, 255, 255, 0.7);
-        text-align: center;
-        z-index: 10;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30px;
+        height: 4px;
+        background: rgba(128, 0, 128, 0.6);
+        border-radius: 2px;
+      }
+
+      @keyframes gloveFloat {
+        0%, 100% { transform: translateY(0) rotate(-5deg); }
+        50% { transform: translateY(-8px) rotate(5deg); }
+      }
+
+      .boxingBag {
+        position: fixed;
+        top: 15%;
+        left: 5%;
+        width: 80px;
+        height: 120px;
+        border-radius: 40px 40px 50px 50px;
+        background: linear-gradient(135deg, rgba(0, 183, 255, 0.3), rgba(128, 0, 128, 0.3));
+        border: 1px solid rgba(0, 183, 255, 0.4);
+        box-shadow: 0 8px 32px rgba(0, 183, 255, 0.2), inset 0 4px 16px rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+        transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 8;
         pointer-events: none;
       }
 
-      .puzzleGrid {
-        position: absolute;
-        top: 32px;
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-        gap: 8px;
-        padding: 16px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, rgba(48, 48, 48, 0.8), rgba(24, 24, 24, 0.9));
-        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+      .boxingBag.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        animation: bagSwing 4s ease-in-out infinite;
       }
 
-      .mazeCard {
-        border-radius: 8px;
-        background: linear-gradient(135deg, rgba(96, 96, 96, 0.9), rgba(64, 64, 64, 0.95));
-        border: 1px solid rgba(48, 48, 48, 0.8);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: rgba(255, 255, 255, 0.8);
-        position: relative;
-        overflow: hidden;
+      @keyframes bagSwing {
+        0%, 100% { transform: rotate(-3deg); }
+        25% { transform: rotate(2deg); }
+        50% { transform: rotate(-2deg); }
+        75% { transform: rotate(3deg); }
       }
 
-      .mazeCard:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      }
-
-      .mazeCard.flipped {
-        background: linear-gradient(135deg, rgba(0, 183, 255, 0.9), rgba(255, 43, 214, 0.9));
-        color: white;
-        font-weight: bold;
-        animation: flipCard 0.6s ease;
-      }
-
-      .mazeCard.matched {
-        background: linear-gradient(135deg, rgba(0, 255, 0, 0.8), rgba(0, 200, 0, 0.9));
-        color: white;
-        pointer-events: none;
-        animation: matchPulse 0.5s ease;
-      }
-
-      @keyframes flipCard {
-        0% { transform: rotateY(0deg); }
-        50% { transform: rotateY(90deg); }
-        100% { transform: rotateY(0deg); }
-      }
-
-      @keyframes matchPulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-      }
-
-      .puzzleSuccessMessage {
-        position: absolute;
+      .championBelt {
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%) scale(0);
-        background: linear-gradient(135deg, rgba(0, 183, 255, 0.95), rgba(255, 43, 214, 0.95));
-        color: white;
-        padding: 12px 20px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 12px;
-        text-align: center;
-        z-index: 20;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        width: 200px;
+        height: 60px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.8));
+        border: 3px solid rgba(255, 255, 255, 0.8);
+        border-radius: 30px;
+        box-shadow: 0 8px 32px rgba(255, 215, 0, 0.4), inset 0 2px 8px rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         pointer-events: none;
       }
 
-      .puzzleSuccessMessage.show {
+      .championBelt.show {
+        opacity: 1;
         transform: translate(-50%, -50%) scale(1);
+      }
+
+      .beltPlate {
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 15px;
+        font-weight: 900;
+        font-size: 14px;
+        text-align: center;
+        border: 1px solid rgba(255, 215, 0, 0.6);
+      }
+
+      .beltNumber {
+        color: #FFD700;
+        font-size: 18px;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .evidence.punch-effect:hover {
+        animation: punchImpact 0.3s ease-out;
+      }
+
+      @keyframes punchImpact {
+        0% { transform: scale(1); }
+        50% { transform: scale(0.98) translateX(-2px); box-shadow: 0 0 0 2px rgba(255, 43, 214, 0.4), 0 0 20px rgba(255, 43, 214, 0.3); }
+        100% { transform: scale(1); }
       }
     </style>
   </head>
@@ -665,18 +682,24 @@
       </div>
     </div>
 
-    <div id="fingerprints" class="fixed inset-0 z-[5] pointer-events-none" aria-hidden="true"></div>
+    <!-- Guantes de Kick Boxing (Fase de Espera) -->
+    <div id="kickGloves" class="kickGloves">
+      <div class="glove"></div>
+      <div class="glove"></div>
+    </div>
 
-    <!-- ===== MAZE RUNNER PUZZLE CONTAINER ===== -->
-    <div id="mazePuzzleContainer" class="mazePuzzleContainer">
-      <div class="puzzleTitle">Puzle de Memoria - Sector 7</div>
-      <div class="puzzleGrid" id="puzzleGrid">
-        <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
-      </div>
-      <div id="puzzleSuccessMessage" class="puzzleSuccessMessage">
-        Sector 7 abierto.<br>Corredora autorizada
+    <!-- Saco de Boxeo Holográfico (Fase Desbloqueada) -->
+    <div id="boxingBag" class="boxingBag"></div>
+
+    <!-- Cinturón de Campeón -->
+    <div id="championBelt" class="championBelt">
+      <div class="beltPlate">
+        <span class="beltNumber">#7</span>
+        <span>Ala-Pívot</span>
       </div>
     </div>
+
+    <div id="fingerprints" class="fixed inset-0 z-[5] pointer-events-none" aria-hidden="true"></div>
 
     <!-- Pantalla de espera con contador -->
     <div id="waitingScreen" class="fixed inset-0 z-[30] flex items-center justify-center bg-ink/95 backdrop-blur-sm">
@@ -795,7 +818,7 @@
               </div>
 
               <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <article class="evidence rounded-xl p-4 transition">
+                <article class="evidence rounded-xl p-4 transition punch-effect">
                   <div class="flex items-center justify-between">
                     <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
                     <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
@@ -808,7 +831,7 @@
                   </p>
                 </article>
 
-                <article class="evidence rounded-xl p-4 transition">
+                <article class="evidence rounded-xl p-4 transition punch-effect">
                   <div class="flex items-center justify-between">
                     <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
                     <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
@@ -821,7 +844,7 @@
                   </p>
                 </article>
 
-                <article class="evidence rounded-xl p-4 transition">
+                <article class="evidence rounded-xl p-4 transition punch-effect">
                   <div class="flex items-center justify-between">
                     <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
                     <div class="flex items-center gap-2">
@@ -837,7 +860,7 @@
                   </p>
                 </article>
 
-                <article class="evidence rounded-xl p-4 transition">
+                <article class="evidence rounded-xl p-4 transition punch-effect">
                   <div class="flex items-center justify-between">
                     <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
                     <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
@@ -1227,109 +1250,6 @@
     <script>
       lucide.createIcons();
 
-      // ===== MAZE RUNNER PUZZLE LOGIC =====
-      const puzzleGrid = document.getElementById('puzzleGrid');
-      const puzzleSuccessMessage = document.getElementById('puzzleSuccessMessage');
-      
-      // Símbolos de Maze Runner para el puzle
-      const mazeSymbols = ['🏃', '🗡️', '🛡️', '🏹', '🔥', '⚡', '🌟', '💎'];
-      
-      let cards = [];
-      let flippedCards = [];
-      let matchedPairs = 0;
-      let puzzleCompleted = false;
-      
-      // Crear pares de tarjetas
-      function createCards() {
-        const cardPairs = [];
-        mazeSymbols.forEach(symbol => {
-          cardPairs.push(symbol, symbol); // Crear par de cada símbolo
-        });
-        
-        // Mezclar tarjetas
-        return cardPairs.sort(() => Math.random() - 0.5);
-      }
-      
-      // Inicializar puzle
-      function initPuzzle() {
-        const symbols = createCards();
-        puzzleGrid.innerHTML = '';
-        cards = [];
-        flippedCards = [];
-        matchedPairs = 0;
-        puzzleCompleted = false;
-        
-        symbols.forEach((symbol, index) => {
-          const card = document.createElement('div');
-          card.className = 'mazeCard';
-          card.dataset.symbol = symbol;
-          card.dataset.index = index;
-          card.textContent = '?';
-          
-          card.addEventListener('click', () => flipCard(card));
-          
-          puzzleGrid.appendChild(card);
-          cards.push(card);
-        });
-      }
-      
-      // Voltear tarjeta
-      function flipCard(card) {
-        if (puzzleCompleted) return;
-        if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
-        if (flippedCards.length >= 2) return;
-        
-        card.classList.add('flipped');
-        card.textContent = card.dataset.symbol;
-        flippedCards.push(card);
-        
-        if (flippedCards.length === 2) {
-          checkMatch();
-        }
-      }
-      
-      // Verificar si hay coincidencia
-      function checkMatch() {
-        const [card1, card2] = flippedCards;
-        
-        if (card1.dataset.symbol === card2.dataset.symbol) {
-          // Coincidencia encontrada
-          setTimeout(() => {
-            card1.classList.add('matched');
-            card2.classList.add('matched');
-            card1.classList.remove('flipped');
-            card2.classList.remove('flipped');
-            flippedCards = [];
-            matchedPairs++;
-            
-            // Verificar si se completó el puzle
-            if (matchedPairs === mazeSymbols.length) {
-              puzzleCompleted = true;
-              puzzleSuccessMessage.classList.add('show');
-              
-              // Efecto de celebración
-              setTimeout(() => {
-                puzzleSuccessMessage.classList.remove('show');
-              }, 3000);
-            }
-          }, 500);
-        } else {
-          // No hay coincidencia
-          setTimeout(() => {
-            card1.classList.remove('flipped');
-            card2.classList.remove('flipped');
-            card1.textContent = '?';
-            card2.textContent = '?';
-            flippedCards = [];
-          }, 1000);
-        }
-      }
-      
-      // Inicializar puzle al cargar
-      initPuzzle();
-
-      // ===== CRIMINALÍSTICA & BÁSQUETBOL EXISTENTES =====
-
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       const fpContainer = document.getElementById("fingerprints");
@@ -1518,22 +1438,39 @@
         const waitMins = document.getElementById("waitMins");
         const waitSecs = document.getElementById("waitSecs");
         const waitStatus = document.getElementById("waitStatus");
+        const forensicPercent = document.getElementById("forensicPercent");
+        const kickGloves = document.getElementById("kickGloves");
         
         if (waitDays) waitDays.textContent = pad2(days);
         if (waitHours) waitHours.textContent = pad2(hours);
         if (waitMins) waitMins.textContent = pad2(mins);
         if (waitSecs) waitSecs.textContent = pad2(secs);
         
+        // Lógica para < 6 horas - mostrar guantes
+        if (days === 0 && hours < 6 && kickGloves) {
+          kickGloves.classList.add("show");
+        } else if (kickGloves) {
+          kickGloves.classList.remove("show");
+        }
+        
         if (waitStatus) {
-          if (days <= 0 && hours <= 0) {
+          if (days <= 0 && hours <= 0 && mins <= 30) {
+            waitStatus.textContent = "¡30 minutos! Buzzer beater inminente. Último round. La cancha es tuya, #7. ¡KO al 2025 y encesta el 2026!";
+          } else if (days <= 0 && hours <= 0) {
             waitStatus.textContent = "Momento decisivo... CLUTCH";
           } else if (days <= 7) {
-            waitStatus.textContent = "Última semana: preparando jugada final";
+            waitStatus.textContent = "Último cuarto. Corredor #7 activado...";
           } else if (days <= 30) {
             waitStatus.textContent = "Análisis en progreso: evidencia clasificada";
           } else {
             waitStatus.textContent = "Procesando evidencia...";
           }
+        }
+        
+        // Actualizar barra de carga para < 6 horas
+        if (days === 0 && hours < 6 && forensicPercent) {
+          const percentage = Math.min(100, Math.max(0, ((hours * 60 + mins) / 360) * 100));
+          forensicPercent.textContent = `Preparando el Round Final... Estamina: ${Math.round(percentage)}%`;
         }
         
         gameStatus.textContent = days <= 0 && hours <= 0 ? "CLUTCH" : "EN JUEGO";
@@ -1643,6 +1580,9 @@
       function unlockMainContent() {
         const mainContent = document.getElementById("mainContent");
         const waitingScreen = document.getElementById("waitingScreen");
+        const boxingBag = document.getElementById("boxingBag");
+        const championBelt = document.getElementById("championBelt");
+        const kickGloves = document.getElementById("kickGloves");
         
         if (mainContent && waitingScreen) {
           // Efecto de zoom hacia afuera
@@ -1654,8 +1594,32 @@
             waitingScreen.style.display = "none";
             mainContent.classList.remove("opacity-0");
             mainContent.classList.add("opacity-100");
+            
+            // Mostrar elementos de Kick Boxing
+            if (boxingBag) {
+              boxingBag.classList.add("show");
+            }
+            
+            // Ocultar guantes
+            if (kickGloves) {
+              kickGloves.classList.remove("show");
+            }
+            
+            // Cambiar a canción de Año Nuevo
+            switchToNewYearSong();
+            
             // Iniciar música automáticamente
             startSoundtrack();
+            
+            // Mostrar cinturón de campeón después de 2 segundos
+            setTimeout(() => {
+              if (championBelt) {
+                championBelt.classList.add("show");
+                setTimeout(() => {
+                  championBelt.classList.remove("show");
+                }, 4000);
+              }
+            }, 2000);
           }, 1000);
         }
       }
@@ -1676,7 +1640,9 @@
       const soundStatus = document.getElementById("soundStatus");
       const isFileProtocol = window.location.protocol === "file:";
       const soundtrackVideoCandidates = ["8s_edTC0FYM", "LnY-xDJK2HA", "-o4YkJqjyVI"];
+      const newYearVideoId = "7vQk3L5XsZ8"; // Mónaco - Bad Bunny
       let soundtrackVideoIndex = 0;
+      let isNewYearSong = false;
 
       let ytPlayer = null;
       let ytReady = false;
@@ -1738,6 +1704,48 @@
           return;
         }
         startSoundtrack();
+      }
+
+      function switchToNewYearSong() {
+        if (!ytReady || !ytPlayer || isNewYearSong) return;
+        
+        try {
+          // Detener canción actual
+          ytPlayer.pauseVideo();
+          
+          // Cambiar a nueva canción
+          ytPlayer.loadVideoById({
+            videoId: newYearVideoId,
+            startSeconds: 0,
+            suggestedQuality: "small"
+          });
+          
+          isNewYearSong = true;
+          
+          // Actualizar información
+          const songInfo = document.querySelector('.soundDockInner .text-xs');
+          if (songInfo) {
+            songInfo.textContent = "Mónaco — Bad Bunny";
+          }
+          
+          const songDesc = document.querySelector('.soundDockInner .text-[11px]');
+          if (songDesc) {
+            songDesc.textContent = "Soundtrack del campeón 2026";
+          }
+          
+          setSoundStatus("CAMBIANDO");
+          
+          setTimeout(() => {
+            ytPlayer.unMute();
+            ytPlayer.setVolume(Number(soundVolume.value || 55));
+            ytPlayer.playVideo();
+            setSoundStatus("SONANDO");
+          }, 1000);
+          
+        } catch (e) {
+          console.error("Error switching song:", e);
+          setSoundStatus("ERROR CAMBIO");
+        }
       }
 
       function ensureSoundtrackByGesture() {
