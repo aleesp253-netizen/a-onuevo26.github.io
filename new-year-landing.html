@@ -1,0 +1,2001 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regalo de Año Nuevo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#050015",
+              deep: "#2A0A5E",
+              uv: "#00B7FF",
+              pink: "#FF2BD6",
+              ember: "#FF6A00",
+              tape: "#FF2BD6",
+            },
+            boxShadow: {
+              uv: "0 0 0 1px rgba(0, 183, 255, .22), 0 0 18px rgba(0, 183, 255, .16), 0 0 28px rgba(255, 43, 214, .10)",
+              ember: "0 0 0 1px rgba(255, 106, 0, .25), 0 0 18px rgba(255, 106, 0, .16)",
+            },
+            fontFamily: {
+              display: [
+                "ui-sans-serif",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "Roboto",
+                "Inter",
+                "Helvetica",
+                "Arial",
+              ],
+            },
+            keyframes: {
+              scan: {
+                "0%": { transform: "translateY(-20%)" },
+                "50%": { transform: "translateY(120%)" },
+                "100%": { transform: "translateY(-20%)" },
+              },
+              tape: {
+                "0%": { transform: "translateX(0)" },
+                "100%": { transform: "translateX(-50%)" },
+              },
+              hoopBounce: {
+                "0%": { transform: "translateY(0)" },
+                "30%": { transform: "translateY(-8px)" },
+                "60%": { transform: "translateY(0)" },
+                "100%": { transform: "translateY(-2px)" },
+              },
+              ballArc: {
+                "0%": { transform: "translate(-140px, 80px) scale(1)", opacity: 1 },
+                "55%": { transform: "translate(-10px, -85px) scale(1.02)", opacity: 1 },
+                "80%": { transform: "translate(0, -10px) scale(.98)", opacity: 1 },
+                "100%": { transform: "translate(0, 10px) scale(.92)", opacity: 0 },
+              },
+              net: {
+                "0%": { transform: "scaleY(1)" },
+                "50%": { transform: "scaleY(1.25)" },
+                "100%": { transform: "scaleY(1)" },
+              },
+            },
+            animation: {
+              scan: "scan 2.8s ease-in-out infinite",
+              tape: "tape 10s linear infinite",
+              hoopBounce: "hoopBounce 900ms ease-out both",
+              ballArc: "ballArc 1200ms cubic-bezier(.2,.85,.1,1) both",
+              net: "net 450ms ease-in-out both",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        background: radial-gradient(1200px 700px at 20% 10%, rgba(0, 183, 255, 0.08), transparent 65%),
+          radial-gradient(1100px 600px at 85% 18%, rgba(255, 43, 214, 0.06), transparent 70%),
+          radial-gradient(1200px 800px at 50% 88%, rgba(42, 10, 94, 0.12), transparent 68%),
+          #030012;
+      }
+
+      .noise {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.09;
+        mix-blend-mode: overlay;
+        z-index: 20;
+      }
+
+      .noise::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");
+        background-size: 180px 180px;
+        filter: contrast(120%) brightness(90%);
+      }
+
+      .scanner {
+        position: relative;
+        display: inline-block;
+        isolation: isolate;
+      }
+
+      .scanner::after {
+        content: "";
+        position: absolute;
+        left: -6%;
+        right: -6%;
+        top: 0;
+        height: 34%;
+        background: linear-gradient(
+          180deg,
+          rgba(0, 183, 255, 0) 0%,
+          rgba(255, 43, 214, 0.42) 18%,
+          rgba(0, 183, 255, 0.95) 50%,
+          rgba(255, 43, 214, 0.38) 82%,
+          rgba(0, 183, 255, 0) 100%
+        );
+        filter: blur(0.5px);
+        mix-blend-mode: screen;
+        animation: scan 2.8s ease-in-out infinite;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .scanner::before {
+        content: "";
+        position: absolute;
+        inset: -12px;
+        border-radius: 18px;
+        background: radial-gradient(50% 60% at 50% 50%, rgba(255, 43, 214, 0.14), rgba(0, 183, 255, 0.12) 40%, transparent 72%);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .fingerprint {
+        position: absolute;
+        width: var(--fp-size, 64px);
+        height: var(--fp-size, 64px);
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--fp-rot, 0deg));
+        transition: opacity 90ms linear;
+        filter: drop-shadow(0 0 10px rgba(255, 43, 214, 0.16)) drop-shadow(0 0 14px rgba(0, 183, 255, 0.14));
+        mix-blend-mode: screen;
+      }
+
+      .fp-stroke {
+        stroke: rgba(255, 43, 214, 0.92);
+      }
+
+      .evidence {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(180deg, rgba(42, 10, 94, 0.32), rgba(0, 0, 0, 0.28));
+      }
+
+      .evidence:hover {
+        box-shadow: 0 0 0 1px rgba(0, 183, 255, 0.28), 0 0 26px rgba(0, 183, 255, 0.14), 0 0 30px rgba(255, 43, 214, 0.12);
+        border-color: rgba(255, 43, 214, 0.28);
+      }
+
+      .scoreboard {
+        background: linear-gradient(180deg, rgba(42, 10, 94, 0.35), rgba(0, 0, 0, 0.24));
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .tapeWrap {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 30;
+      }
+
+      .tapeBand {
+        position: absolute;
+        left: -20vw;
+        top: 15vh;
+        width: 140vw;
+        transform: rotate(-14deg);
+        background: linear-gradient(90deg, rgba(255, 43, 214, 0.92), rgba(0, 183, 255, 0.82));
+        border-top: 1px solid rgba(0, 0, 0, 0.35);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+      }
+
+      .tapeInner {
+        display: flex;
+        gap: 28px;
+        padding: 10px 0;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.88);
+        white-space: nowrap;
+        animation: tape 10s linear infinite;
+      }
+
+      .uv-canvas,
+      .confetti-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+      }
+
+      .uv-canvas {
+        z-index: 10;
+        mix-blend-mode: screen;
+      }
+
+      .confetti-canvas {
+        z-index: 60;
+      }
+
+      .hoopOverlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        z-index: 55;
+        opacity: 0;
+        transition: opacity 180ms ease;
+      }
+
+      .hoopOverlay[data-open="true"] {
+        opacity: 1;
+      }
+
+      .hoopStage {
+        position: relative;
+        width: min(520px, 92vw);
+        height: min(340px, 70vh);
+        border-radius: 22px;
+        background: radial-gradient(560px 260px at 50% 0%, rgba(0, 183, 255, 0.14), transparent 62%),
+          radial-gradient(520px 260px at 75% 40%, rgba(255, 43, 214, 0.10), transparent 64%),
+          linear-gradient(180deg, rgba(42, 10, 94, 0.34), rgba(0, 0, 0, 0.24));
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.10), 0 12px 40px rgba(0, 0, 0, 0.55);
+        overflow: hidden;
+      }
+
+      .hoopTitle {
+        position: absolute;
+        top: 14px;
+        left: 18px;
+        right: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .rim {
+        position: absolute;
+        right: 74px;
+        top: 126px;
+        width: 160px;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(255, 106, 0, 0.95), rgba(255, 106, 0, 0.75));
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 22px rgba(255, 106, 0, 0.25);
+      }
+
+      .backboard {
+        position: absolute;
+        right: 28px;
+        top: 56px;
+        width: 118px;
+        height: 140px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(42, 10, 94, 0.38), rgba(0, 0, 0, 0.22));
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 0 0 1px rgba(0, 183, 255, 0.08);
+      }
+
+      .square {
+        position: absolute;
+        right: 52px;
+        top: 94px;
+        width: 68px;
+        height: 52px;
+        border: 2px solid rgba(0, 183, 255, 0.44);
+        border-radius: 10px;
+      }
+
+      .net {
+        position: absolute;
+        right: 104px;
+        top: 142px;
+        width: 58px;
+        height: 72px;
+        transform-origin: top center;
+      }
+
+      .netLine {
+        position: absolute;
+        inset: 0;
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.45) 0 2px, transparent 2px 10px),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.32) 0 2px, transparent 2px 10px);
+        clip-path: polygon(0 0, 100% 0, 86% 100%, 14% 100%);
+        opacity: 0.65;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.12));
+      }
+
+      .ball {
+        position: absolute;
+        left: 52px;
+        top: 190px;
+        width: 58px;
+        height: 58px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), transparent 45%),
+          linear-gradient(180deg, rgba(255, 106, 0, 0.95), rgba(255, 106, 0, 0.75));
+        box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.24), 0 0 30px rgba(255, 106, 0, 0.16);
+        opacity: 0;
+      }
+
+      .ball::before,
+      .ball::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 999px;
+        border: 2px solid rgba(0, 0, 0, 0.45);
+        opacity: 0.55;
+      }
+
+      .ball::after {
+        inset: 0;
+        border-radius: 999px;
+        border-top: 2px solid rgba(0, 0, 0, 0.5);
+        border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+        border-left: 2px solid transparent;
+        border-right: 2px solid transparent;
+      }
+
+      .ball {
+        box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.24), 0 0 44px rgba(255, 106, 0, 0.22);
+      }
+
+      .jerseyShell {
+        position: relative;
+        width: 148px;
+        height: 182px;
+        border-radius: 22px;
+        border: 1px solid rgba(0, 183, 255, 0.28);
+        background: radial-gradient(90px 120px at 50% 22%, rgba(255, 43, 214, 0.14), transparent 62%),
+          linear-gradient(180deg, rgba(42, 10, 94, 0.40), rgba(0, 0, 0, 0.42));
+        box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.10), 0 14px 40px rgba(0, 0, 0, 0.55);
+        clip-path: polygon(18% 0%, 36% 0%, 44% 10%, 56% 10%, 64% 0%, 82% 0%, 100% 24%, 88% 34%, 88% 100%, 12% 100%, 12% 34%, 0% 24%);
+      }
+
+      .jerseyShell::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 18px;
+        border: 1px dashed rgba(255, 43, 214, 0.42);
+        pointer-events: none;
+      }
+
+      .jerseyNumber {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 88px;
+        letter-spacing: -0.04em;
+        color: rgba(0, 183, 255, 0.94);
+        text-shadow: 0 0 18px rgba(0, 183, 255, 0.22), 0 0 26px rgba(255, 43, 214, 0.12);
+        cursor: default;
+        transition: filter 160ms ease, text-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+      }
+
+      .jerseyNumber:hover {
+        color: rgba(255, 43, 214, 0.98);
+        filter: drop-shadow(0 0 16px rgba(255, 43, 214, 0.44)) drop-shadow(0 0 30px rgba(0, 183, 255, 0.26));
+        text-shadow: 0 0 12px rgba(255, 43, 214, 0.9), 0 0 38px rgba(0, 183, 255, 0.28);
+        transform: translateY(-1px) scale(1.02);
+      }
+
+      .evidenceMarker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 30px;
+        width: 30px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 43, 214, 0.32);
+        background: linear-gradient(180deg, rgba(255, 43, 214, 0.18), rgba(0, 0, 0, 0.35));
+        color: rgba(255, 43, 214, 0.95);
+        font-weight: 900;
+        box-shadow: 0 0 22px rgba(255, 43, 214, 0.16);
+      }
+
+      .soundDock {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 70;
+        width: min(360px, calc(100vw - 36px));
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: linear-gradient(180deg, rgba(42, 10, 94, 0.46), rgba(0, 0, 0, 0.38));
+        box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.12), 0 18px 44px rgba(0, 0, 0, 0.58);
+        backdrop-filter: blur(10px);
+      }
+
+      .soundDockInner {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 12px;
+        padding: 12px;
+        align-items: center;
+      }
+
+      .soundBtn {
+        height: 56px;
+        width: 56px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 43, 214, 0.28);
+        background: radial-gradient(34px 34px at 30% 30%, rgba(0, 183, 255, 0.18), transparent 55%),
+          linear-gradient(180deg, rgba(255, 43, 214, 0.16), rgba(0, 0, 0, 0.38));
+        box-shadow: 0 0 0 1px rgba(0, 183, 255, 0.14), 0 0 24px rgba(255, 43, 214, 0.12);
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .soundBtn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 183, 255, 0.35), 0 0 0 1px rgba(255, 43, 214, 0.2), 0 0 30px rgba(255, 43, 214, 0.16);
+      }
+
+      .eq {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 160ms ease;
+      }
+
+      .eqBar {
+        width: 4px;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(0, 183, 255, 0.85), rgba(255, 43, 214, 0.85));
+        transform-origin: center bottom;
+      }
+
+      .soundDock[data-playing="true"] .eq {
+        opacity: 1;
+      }
+
+      .soundDock[data-playing="true"] .eqBar {
+        animation: eqPulse 780ms ease-in-out infinite;
+      }
+
+      .soundDock[data-playing="true"] .eqBar:nth-child(2) {
+        animation-duration: 640ms;
+      }
+
+      .soundDock[data-playing="true"] .eqBar:nth-child(3) {
+        animation-duration: 820ms;
+      }
+
+      @keyframes eqPulse {
+        0% {
+          transform: scaleY(0.4);
+          opacity: 0.75;
+        }
+        50% {
+          transform: scaleY(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scaleY(0.55);
+          opacity: 0.85;
+        }
+      }
+
+      @keyframes beatGlow {
+        0% {
+          box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.1), 0 14px 40px rgba(0, 0, 0, 0.55);
+          border-color: rgba(0, 183, 255, 0.24);
+        }
+        50% {
+          box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.26), 0 0 26px rgba(255, 43, 214, 0.12), 0 0 24px rgba(0, 183, 255, 0.12),
+            0 14px 40px rgba(0, 0, 0, 0.55);
+          border-color: rgba(255, 43, 214, 0.38);
+        }
+        100% {
+          box-shadow: 0 0 0 1px rgba(255, 43, 214, 0.12), 0 14px 40px rgba(0, 0, 0, 0.55);
+          border-color: rgba(0, 183, 255, 0.26);
+        }
+      }
+
+      body.sound-on .jerseyShell {
+        animation: beatGlow 980ms ease-in-out infinite;
+      }
+
+      .ytHost {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        left: -20px;
+        top: -20px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ===== MAZE RUNNER STYLES ===== */
+      .mazeContainer {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 320px;
+        height: 320px;
+        z-index: 35;
+        border-radius: 16px;
+        border: 2px solid rgba(128, 128, 128, 0.6);
+        background: linear-gradient(135deg, rgba(64, 64, 64, 0.9), rgba(32, 32, 32, 0.95));
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+        overflow: hidden;
+      }
+
+      .mazeTitle {
+        position: absolute;
+        top: 8px;
+        left: 12px;
+        right: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .mazeCanvas {
+        position: absolute;
+        top: 32px;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, rgba(48, 48, 48, 0.8), rgba(24, 24, 24, 0.9));
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .basketballDraggable {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(255, 140, 0, 0.9), rgba(255, 69, 0, 0.8));
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        cursor: grab;
+        z-index: 15;
+        transition: transform 0.1s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+
+      .basketballDraggable:active {
+        cursor: grabbing;
+        transform: scale(1.1);
+      }
+
+      .basketballDraggable::before,
+      .basketballDraggable::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
+
+      .basketballDraggable::before {
+        inset: 4px;
+      }
+
+      .basketballDraggable::after {
+        inset: 0;
+        border-top: 1px solid rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+      }
+
+      .magnifyingGlassTarget {
+        position: absolute;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid rgba(192, 192, 192, 0.8);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .magnifyingGlassTarget::before {
+        content: "";
+        position: absolute;
+        right: -8px;
+        bottom: -8px;
+        width: 16px;
+        height: 3px;
+        background: rgba(192, 192, 192, 0.8);
+        transform: rotate(-45deg);
+        border-radius: 2px;
+      }
+
+      .mazeWall {
+        position: absolute;
+        background: linear-gradient(135deg, rgba(96, 96, 96, 0.9), rgba(64, 64, 64, 0.95));
+        border: 1px solid rgba(48, 48, 48, 0.8);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        z-index: 8;
+      }
+
+      .mazeSuccessMessage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        background: linear-gradient(135deg, rgba(0, 183, 255, 0.95), rgba(255, 43, 214, 0.95));
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 12px;
+        text-align: center;
+        z-index: 20;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        pointer-events: none;
+      }
+
+      .mazeSuccessMessage.show {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    </style>
+  </head>
+  <body class="font-display text-white/90 overflow-x-hidden">
+    <canvas id="uvCanvas" class="uv-canvas"></canvas>
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+    <div id="noise" class="noise"></div>
+
+    <div class="tapeWrap" aria-hidden="true">
+      <div class="tapeBand">
+        <div class="tapeInner">
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+          <span>ESCENA DEL AÑO NUEVO - NO PASAR</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="fingerprints" class="fixed inset-0 z-[5] pointer-events-none" aria-hidden="true"></div>
+
+    <!-- ===== MAZE RUNNER CONTAINER ===== -->
+    <div id="mazeContainer" class="mazeContainer">
+      <div class="mazeTitle">Mapa del Laberinto - Sector 7</div>
+      <div class="mazeCanvas" id="mazeCanvas">
+        <div class="mazeWall" style="left: 20px; top: 20px; width: 120px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 20px; top: 20px; width: 8px; height: 80px;"></div>
+        <div class="mazeWall" style="left: 140px; top: 20px; width: 8px; height: 60px;"></div>
+        <div class="mazeWall" style="left: 60px; top: 60px; width: 80px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 60px; top: 100px; width: 8px; height: 40px;"></div>
+        <div class="mazeWall" style="left: 140px; top: 100px; width: 40px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 180px; top: 40px; width: 8px; height: 68px;"></div>
+        <div class="mazeWall" style="left: 180px; top: 140px; width: 60px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 240px; top: 40px; width: 8px; height: 108px;"></div>
+        <div class="mazeWall" style="left: 20px; top: 140px; width: 40px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 20px; top: 180px; width: 228px; height: 8px;"></div>
+        <div class="mazeWall" style="left: 20px; top: 100px; width: 8px; height: 80px;"></div>
+        
+        <div id="mazeBasketball" class="basketballDraggable" style="left: 30px; top: 30px;"></div>
+        <div id="mazeMagnifyingGlass" class="magnifyingGlassTarget" style="right: 30px; bottom: 30px;"></div>
+        
+        <div id="mazeSuccessMessage" class="mazeSuccessMessage">
+          Sector 7 abierto.<br>Corredora autorizada
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla de espera con contador -->
+    <div id="waitingScreen" class="fixed inset-0 z-[30] flex items-center justify-center bg-ink/95 backdrop-blur-sm">
+      <!-- Mini-puzles interactivos -->
+      <button id="magnifyingGlass" class="fixed top-6 left-6 h-14 w-14 rounded-2xl border border-uv/30 bg-deep/40 flex items-center justify-center hover:border-uv/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Escanear huellas">
+        <i data-lucide="search" class="h-7 w-7 text-uv group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="basketball" class="fixed top-6 right-6 h-14 w-14 rounded-2xl border border-ember/30 bg-deep/40 flex items-center justify-center hover:border-ember/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Lanzar balón">
+        <i data-lucide="dribbble" class="h-7 w-7 text-ember group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="uvLight" class="fixed bottom-6 left-6 h-14 w-14 rounded-2xl border border-pink/30 bg-deep/40 flex items-center justify-center hover:border-pink/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Luz UV">
+        <i data-lucide="zap" class="h-7 w-7 text-pink group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="forceOpen" class="fixed bottom-6 right-6 h-14 w-14 rounded-2xl border border-white/20 bg-deep/40 flex items-center justify-center hover:border-white/40 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Forzar apertura de caso">
+        <i data-lucide="unlock" class="h-7 w-7 text-white/80 group-hover:scale-110 transition-transform"></i>
+      </button>
+
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <div class="mb-8">
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+            <span class="text-uv">Analizando</span> escena del <span class="text-pink">próximo año</span>...
+          </h2>
+          <p class="text-lg text-white/70 mb-6">
+            Espere a que se procesen las evidencias
+          </p>
+        </div>
+
+        <!-- Marcador de básquetbol estilo NBA -->
+        <div class="rounded-2xl border border-white/20 bg-deep/50 p-8 mb-6">
+          <div class="text-sm tracking-[0.2em] uppercase text-white/60 mb-4">Marcador de Básquetbol - Cuenta Regresiva para 2026</div>
+          <div class="grid grid-cols-4 gap-4 max-w-md mx-auto">
+            <div class="text-center">
+              <div class="text-4xl font-black text-uv" id="waitDays">00</div>
+              <div class="text-xs tracking-[0.24em] uppercase text-white/55 mt-1">DÍAS</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-black text-ember" id="waitHours">00</div>
+              <div class="text-xs tracking-[0.24em] uppercase text-white/55 mt-1">HRS</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-black text-uv" id="waitMins">00</div>
+              <div class="text-xs tracking-[0.24em] uppercase text-white/55 mt-1">MIN</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-black text-pink" id="waitSecs">00</div>
+              <div class="text-xs tracking-[0.24em] uppercase text-white/55 mt-1">SEG</div>
+            </div>
+          </div>
+          <div class="mt-6 text-sm text-white/60">
+            <span class="inline-flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-ember animate-pulse"></span>
+              <span id="waitStatus">Procesando evidencia...</span>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Barra de Carga Forense -->
+        <div class="rounded-2xl border border-white/20 bg-deep/50 p-6">
+          <div class="text-sm tracking-[0.2em] uppercase text-white/60 mb-3">Barra de Carga Forense</div>
+          <div class="h-4 rounded-full bg-white/10 overflow-hidden">
+            <div id="forensicBar" class="h-full bg-gradient-to-r from-uv/80 via-pink/80 to-ember/80 transition-all duration-1000 ease-out" style="width: 0%"></div>
+          </div>
+          <div class="mt-2 text-xs text-white/50">
+            <span id="forensicPercent">0%</span> completado
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main id="mainContent" class="relative z-[25] opacity-0 transition-opacity duration-1000 ease-in-out">
+      <section class="mx-auto max-w-6xl px-6 pt-20 pb-10">
+        <div class="flex flex-col gap-10">
+          <header class="flex flex-col gap-5">
+            <div class="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-white/60">
+              <span class="inline-block h-2 w-2 rounded-full bg-uv shadow-[0_0_14px_rgba(0,183,255,.55)]"></span>
+              <span>Informe de celebración / UV Mode</span>
+            </div>
+
+            <h1 class="scanner text-balance text-center font-extrabold leading-[1.05] tracking-tight text-white">
+              <span class="block text-4xl sm:text-6xl md:text-7xl lg:text-7xl px-4 py-5 rounded-[22px]">
+                Feliz año mi criminalística y basquetbolista fav
+              </span>
+            </h1>
+
+            <div class="mx-auto w-fit rounded-2xl border border-white/10 bg-deep/35 px-4 py-2">
+              <div class="flex items-center gap-3 text-xs font-semibold tracking-[0.18em] uppercase text-white/70">
+                <span class="h-2 w-2 rounded-full bg-pink shadow-[0_0_16px_rgba(255,43,214,.5)]"></span>
+                <span>Ficha técnica</span>
+                <span class="text-white/40">·</span>
+                <span class="text-pink">#7</span>
+                <span class="text-white/40">·</span>
+                <span>Posición: Ala-pívot</span>
+              </div>
+            </div>
+
+            <p class="mx-auto max-w-2xl text-center text-base sm:text-lg text-white/70">
+              Un expediente especial: ciencia, intuición y clutch en el último cuarto. Que el 2026 te encuentre con
+              metas claras y victorias limpias.
+            </p>
+          </header>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <section class="lg:col-span-7 evidence rounded-2xl p-6 sm:p-7">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                  <div class="text-xs tracking-[0.22em] uppercase text-white/55">Panel de Evidencia</div>
+                  <div class="text-xl font-bold">Peritaje del Año</div>
+                </div>
+                <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold bg-white/5 border border-white/10">
+                  <span class="h-1.5 w-1.5 rounded-full bg-pink shadow-[0_0_14px_rgba(255,43,214,.5)]"></span>
+                  <span>Cadena de custodia: OK</span>
+                </div>
+              </div>
+
+              <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <article class="evidence rounded-xl p-4 transition">
+                  <div class="flex items-center justify-between">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
+                    <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
+                      <i data-lucide="microscope" class="h-5 w-5 text-uv"></i>
+                    </span>
+                  </div>
+                  <div class="mt-3 font-semibold">Precisión de laboratorio</div>
+                  <p class="mt-1 text-sm text-white/65">
+                    Tus hallazgos: impecables. Cada detalle cuenta, y tú lo haces brillar bajo luz UV.
+                  </p>
+                </article>
+
+                <article class="evidence rounded-xl p-4 transition">
+                  <div class="flex items-center justify-between">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
+                    <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
+                      <i data-lucide="search" class="h-5 w-5 text-uv"></i>
+                    </span>
+                  </div>
+                  <div class="mt-3 font-semibold">Instinto de investigación</div>
+                  <p class="mt-1 text-sm text-white/65">
+                    Una lupa no alcanza para tu enfoque. Tú lees patrones donde otros solo ven ruido.
+                  </p>
+                </article>
+
+                <article class="evidence rounded-xl p-4 transition">
+                  <div class="flex items-center justify-between">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
+                    <div class="flex items-center gap-2">
+                      <span class="evidenceMarker" aria-label="Marcador de Evidencia 7">7</span>
+                      <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
+                        <i data-lucide="dribbble" class="h-5 w-5 text-ember"></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="mt-3 font-semibold">Mentalidad de cancha</div>
+                  <p class="mt-1 text-sm text-white/65">
+                    Defensa, visión y ese tiro decisivo. El 2026 también te pertenece.
+                  </p>
+                </article>
+
+                <article class="evidence rounded-xl p-4 transition">
+                  <div class="flex items-center justify-between">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">CASE-7</div>
+                    <span class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 border border-white/10">
+                      <i data-lucide="skull" class="h-5 w-5 text-white/80"></i>
+                    </span>
+                  </div>
+                  <div class="mt-3 font-semibold">Silueta en tiza (metáfora)</div>
+                  <p class="mt-1 text-sm text-white/65">
+                    Dejas huella donde pasas: en el caso, en el equipo, en la vida.
+                  </p>
+                </article>
+              </div>
+            </section>
+
+            <aside class="lg:col-span-5 flex flex-col gap-6">
+              <section class="evidence rounded-2xl p-6 overflow-hidden relative">
+                <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-uv/10 blur-2xl" aria-hidden="true"></div>
+                <div class="absolute -left-10 -bottom-10 h-44 w-44 rounded-full bg-pink/10 blur-2xl" aria-hidden="true"></div>
+                <div class="relative flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Identidad deportiva</div>
+                    <div class="mt-1 text-lg font-bold">Jersey de básquetbol</div>
+                    <div class="mt-1 text-sm text-white/70">Posición: Ala-pívot</div>
+                    <div class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-white/70">
+                      <span class="h-1.5 w-1.5 rounded-full bg-pink shadow-[0_0_14px_rgba(255,43,214,.5)]"></span>
+                      <span>Naranja vibrante solo para balón, aro y marcador</span>
+                    </div>
+                  </div>
+                  <div class="jerseyShell" aria-label="Jersey digital">
+                    <span class="jerseyNumber" aria-label="Número 7">7</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="scoreboard rounded-2xl p-6">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Marcador NBA (versión Año Nuevo)</div>
+                    <div class="mt-1 text-lg font-bold">Cuenta regresiva para 2026</div>
+                  </div>
+                  <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold bg-white/5 border border-white/10">
+                    <span class="h-2 w-2 rounded-full bg-uv"></span>
+                    <span id="gameStatus">EN JUEGO</span>
+                  </div>
+                </div>
+
+                <div class="mt-5 grid grid-cols-12 gap-3 items-stretch">
+                  <div class="col-span-5 rounded-xl border border-white/10 bg-deep/40 p-4">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">HOME</div>
+                    <div class="mt-1 text-2xl font-extrabold">CASE</div>
+                    <div class="mt-3 text-4xl font-black text-ember" id="scoreLeft">7</div>
+                  </div>
+                  <div class="col-span-2 grid place-items-center">
+                    <div class="text-xs font-bold text-white/55">VS</div>
+                  </div>
+                  <div class="col-span-5 rounded-xl border border-white/10 bg-deep/40 p-4">
+                    <div class="text-xs tracking-[0.18em] uppercase text-white/55">AWAY</div>
+                    <div class="mt-1 text-2xl font-extrabold">HOOPS</div>
+                    <div class="mt-3 text-4xl font-black text-ember" id="scoreRight">7</div>
+                  </div>
+                </div>
+
+                <div class="mt-4 rounded-xl border border-white/10 bg-deep/35 p-4">
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">RELOJ</div>
+                    <div class="inline-flex items-center gap-2">
+                      <span class="text-[10px] px-2 py-1 rounded bg-pink/20 text-pink font-bold border border-pink/30">Q4</span>
+                      <span class="text-[10px] px-2 py-1 rounded bg-uv/15 text-uv font-bold border border-uv/25">SHOT</span>
+                    </div>
+                  </div>
+                  <div class="mt-2 grid grid-cols-4 gap-2 text-center">
+                    <div class="rounded-lg bg-deep/30 border border-white/10 py-3">
+                      <div class="text-2xl font-extrabold" id="cdDays">00</div>
+                      <div class="text-[10px] tracking-[0.24em] uppercase text-white/55">DÍAS</div>
+                    </div>
+                    <div class="rounded-lg bg-deep/30 border border-white/10 py-3">
+                      <div class="text-2xl font-extrabold" id="cdHours">00</div>
+                      <div class="text-[10px] tracking-[0.24em] uppercase text-white/55">HRS</div>
+                    </div>
+                    <div class="rounded-lg bg-deep/30 border border-white/10 py-3">
+                      <div class="text-2xl font-extrabold" id="cdMins">00</div>
+                      <div class="text-[10px] tracking-[0.24em] uppercase text-white/55">MIN</div>
+                    </div>
+                    <div class="rounded-lg bg-deep/30 border border-white/10 py-3">
+                      <div class="text-2xl font-extrabold" id="cdSecs">00</div>
+                      <div class="text-[10px] tracking-[0.24em] uppercase text-white/55">SEG</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="evidence rounded-2xl p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="text-xs tracking-[0.22em] uppercase text-white/55">Lectura rápida</div>
+                    <div class="mt-1 text-lg font-bold">Perfil 2026</div>
+                    <div class="mt-1 text-sm text-white/70">Posición: Ala-pívot</div>
+                  </div>
+                  <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-white/5 border border-white/10">
+                    <i data-lucide="sparkles" class="h-5 w-5 text-uv"></i>
+                  </span>
+                </div>
+
+                <div class="mt-4 grid gap-3">
+                  <div class="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-deep/35 px-4 py-3">
+                    <div class="flex items-center gap-3">
+                      <span class="h-9 w-9 rounded-lg bg-uv/10 border border-uv/20 grid place-items-center">
+                        <i data-lucide="shield" class="h-4 w-4 text-uv"></i>
+                      </span>
+                      <div>
+                        <div class="font-semibold">Defensa</div>
+                        <div class="text-xs text-white/60">En el caso y en la cancha</div>
+                      </div>
+                    </div>
+                    <div class="text-sm font-bold text-white/80">ELITE</div>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-deep/35 px-4 py-3">
+                    <div class="flex items-center gap-3">
+                      <span class="h-9 w-9 rounded-lg bg-pink/10 border border-pink/20 grid place-items-center">
+                        <i data-lucide="flame" class="h-4 w-4 text-pink"></i>
+                      </span>
+                      <div>
+                        <div class="font-semibold">Energía</div>
+                        <div class="text-xs text-white/60">Ambición, disciplina, alegría</div>
+                      </div>
+                    </div>
+                    <div class="text-sm font-bold text-white/80">HIGH</div>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-deep/35 px-4 py-3">
+                    <div class="flex items-center gap-3">
+                      <span class="h-9 w-9 rounded-lg bg-white/5 border border-white/10 grid place-items-center">
+                        <i data-lucide="fingerprint" class="h-4 w-4 text-white/85"></i>
+                      </span>
+                      <div>
+                        <div class="font-semibold">Huella</div>
+                        <div class="text-xs text-white/60">Dejar el mundo mejor</div>
+                      </div>
+                    </div>
+                    <div class="text-sm font-bold text-white/80">REAL</div>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-6xl px-6 pb-20">
+        <div class="evidence rounded-2xl p-6 sm:p-8 overflow-hidden relative">
+          <div class="absolute inset-0 opacity-60" aria-hidden="true">
+            <div class="absolute -left-24 top-10 h-56 w-56 rounded-full bg-uv/10 blur-2xl"></div>
+            <div class="absolute -right-16 bottom-10 h-72 w-72 rounded-full bg-pink/10 blur-2xl"></div>
+          </div>
+
+          <div class="relative">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <div>
+                <div class="text-xs tracking-[0.22em] uppercase text-white/55">Sección Forense</div>
+                <h2 class="mt-2 text-2xl sm:text-3xl font-extrabold">Análisis de Desempeño</h2>
+                <p class="mt-2 max-w-2xl text-white/70">
+                  Rebotes, puntos y bloqueos; evidencias recolectadas, huellas analizadas y casos cerrados. Un reporte mixto
+                  con luz azul eléctrica y rosa neón.
+                </p>
+              </div>
+              <div class="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-deep/30 px-4 py-3">
+                <span class="h-10 w-10 rounded-xl bg-uv/10 border border-uv/20 grid place-items-center">
+                  <i data-lucide="target" class="h-5 w-5 text-uv"></i>
+                </span>
+                <div>
+                  <div class="text-xs tracking-[0.22em] uppercase text-white/55">Rango</div>
+                  <div class="font-bold">0 → 365 días</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="rounded-xl border border-white/10 bg-deep/35 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs tracking-[0.18em] uppercase text-white/55">PUNTOS / EVIDENCIAS</div>
+                  <i data-lucide="clipboard-check" class="h-4 w-4 text-uv"></i>
+                </div>
+                <div class="mt-2 text-3xl font-black text-pink">7</div>
+                <div class="mt-1 text-sm text-white/70">evidencias recolectadas bajo luz UV</div>
+              </div>
+              <div class="rounded-xl border border-white/10 bg-deep/35 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs tracking-[0.18em] uppercase text-white/55">REBOTES / HUELLAS</div>
+                  <i data-lucide="fingerprint" class="h-4 w-4 text-uv"></i>
+                </div>
+                <div class="mt-2 text-3xl font-black text-uv">7</div>
+                <div class="mt-1 text-sm text-white/70">huellas analizadas sin perder una posesión</div>
+              </div>
+              <div class="rounded-xl border border-white/10 bg-deep/35 p-4">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs tracking-[0.18em] uppercase text-white/55">BLOQUEOS / CASOS</div>
+                  <i data-lucide="shield-check" class="h-4 w-4 text-uv"></i>
+                </div>
+                <div class="mt-2 text-3xl font-black text-pink">7</div>
+                <div class="mt-1 text-sm text-white/70">casos cerrados con defensa de élite</div>
+              </div>
+            </div>
+
+            <div class="mt-7 grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div class="md:col-span-7">
+                <div class="rounded-2xl border border-white/10 bg-deep/35 p-5">
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="font-bold">Tabla de desempeño</div>
+                    <div class="text-xs tracking-[0.2em] uppercase text-white/55">Métrica: constancia</div>
+                  </div>
+
+                  <div class="mt-4 space-y-4">
+                    <div class="rounded-xl border border-white/10 bg-deep/30 p-4">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                          <span class="h-9 w-9 rounded-lg bg-uv/10 border border-uv/20 grid place-items-center">
+                            <i data-lucide="graduation-cap" class="h-4 w-4 text-uv"></i>
+                          </span>
+                          <div>
+                            <div class="font-semibold">Puntos / evidencias recolectadas</div>
+                            <div class="text-xs text-white/60">Ataque limpio, cadena de custodia intacta</div>
+                          </div>
+                        </div>
+                        <div class="text-xs font-bold text-white/70">Impacto: ALTO</div>
+                      </div>
+                      <div class="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div class="h-full w-[72%] bg-gradient-to-r from-uv/80 to-uv"></div>
+                      </div>
+                    </div>
+
+                    <div class="rounded-xl border border-white/10 bg-deep/30 p-4">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                          <span class="h-9 w-9 rounded-lg bg-pink/10 border border-pink/20 grid place-items-center">
+                            <i data-lucide="dumbbell" class="h-4 w-4 text-pink"></i>
+                          </span>
+                          <div>
+                            <div class="font-semibold">Rebotes / huellas analizadas</div>
+                            <div class="text-xs text-white/60">Segundas oportunidades, patrones encontrados</div>
+                          </div>
+                        </div>
+                        <div class="text-xs font-bold text-white/70">Impacto: CLUTCH</div>
+                      </div>
+                      <div class="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div class="h-full w-[64%] bg-gradient-to-r from-pink/80 to-pink"></div>
+                      </div>
+                    </div>
+
+                    <div class="rounded-xl border border-white/10 bg-deep/30 p-4">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                          <span class="h-9 w-9 rounded-lg bg-white/5 border border-white/10 grid place-items-center">
+                            <i data-lucide="heart" class="h-4 w-4 text-white/85"></i>
+                          </span>
+                          <div>
+                            <div class="font-semibold">Bloqueos / casos cerrados</div>
+                            <div class="text-xs text-white/60">Cierre perfecto: en la pintura y en el expediente</div>
+                          </div>
+                        </div>
+                        <div class="text-xs font-bold text-white/70">Impacto: SOSTENIBLE</div>
+                      </div>
+                      <div class="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div class="h-full w-[78%] bg-gradient-to-r from-white/60 to-white/85"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="md:col-span-5">
+                <div class="rounded-2xl border border-white/10 bg-deep/35 p-5 relative overflow-hidden">
+                  <div class="flex items-center justify-between">
+                    <div class="font-bold">Diagrama de impacto</div>
+                    <div class="text-xs tracking-[0.2em] uppercase text-white/55">Ruta: enfoque</div>
+                  </div>
+
+                  <div class="mt-4 rounded-2xl border border-white/10 bg-deep/30 p-4">
+                    <div class="grid gap-3">
+                      <div class="flex items-center gap-3">
+                        <span class="h-3 w-3 rounded-full bg-uv shadow-[0_0_14px_rgba(0,183,255,.55)]"></span>
+                        <div class="text-sm">
+                          <span class="font-semibold">Salida:</span>
+                          <span class="text-white/70"> propósito</span>
+                        </div>
+                      </div>
+                      <div class="h-10 relative">
+                        <div class="absolute left-1.5 top-0 bottom-0 w-[2px] bg-gradient-to-b from-uv/80 via-white/20 to-pink/70"></div>
+                        <div class="absolute left-1.5 top-1 w-56 h-[2px] bg-gradient-to-r from-uv/80 to-transparent"></div>
+                        <div class="absolute left-1.5 top-5 w-48 h-[2px] bg-gradient-to-r from-white/30 to-transparent"></div>
+                        <div class="absolute left-1.5 top-9 w-40 h-[2px] bg-gradient-to-r from-pink/80 to-transparent"></div>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="h-3 w-3 rounded-full bg-pink shadow-[0_0_14px_rgba(255,43,214,.5)]"></span>
+                        <div class="text-sm">
+                          <span class="font-semibold">Impacto:</span>
+                          <span class="text-white/70"> resultados</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 rounded-xl border border-white/10 bg-deep/30 p-4">
+                    <div class="flex items-start gap-3">
+                      <span class="mt-0.5 h-9 w-9 rounded-lg bg-uv/10 border border-uv/20 grid place-items-center">
+                        <i data-lucide="file-check" class="h-4 w-4 text-uv"></i>
+                      </span>
+                      <div>
+                        <div class="font-semibold">Nota de laboratorio</div>
+                        <p class="mt-1 text-sm text-white/70">
+                          Tu evidencia favorita para 2026: constancia + pasión. No falla en peritaje.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div class="text-sm text-white/65">Pista: mueve el mouse para iluminar huellas en el fondo.</div>
+              <button
+                id="closeCase"
+                class="group inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-4 font-extrabold tracking-wide bg-gradient-to-r from-uv/20 to-pink/20 border border-white/10 hover:border-pink/30 hover:shadow-[0_0_0_1px_rgba(0,183,255,.18),0_0_30px_rgba(255,43,214,.12)] transition"
+                type="button"
+              >
+                <span class="inline-flex items-center justify-center h-11 w-11 rounded-xl bg-black/40 border border-white/10 group-hover:border-pink/30 transition">
+                  <i data-lucide="stamp" class="h-5 w-5 text-pink"></i>
+                </span>
+                <span>Cerrar Expediente</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="mx-auto max-w-6xl px-6 pb-16">
+        <div class="text-center text-xs tracking-[0.22em] uppercase text-white/45">Hecho con UV + corazón + clutch.</div>
+      </footer>
+    </main>
+
+    <div id="hoopOverlay" class="hoopOverlay" aria-hidden="true" data-open="false">
+      <div class="hoopStage">
+        <div class="hoopTitle">
+          <div class="inline-flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-uv"></span>
+            <span>CONFETI DE EVIDENCIA</span>
+          </div>
+          <div class="text-white/60 text-sm">Swish protocol</div>
+        </div>
+        <div class="backboard"></div>
+        <div class="square"></div>
+        <div id="rim" class="rim"></div>
+        <div id="net" class="net"><div class="netLine"></div></div>
+        <div id="ball" class="ball"></div>
+        <div class="absolute left-6 bottom-6 right-6 text-sm text-white/70">Caso cerrado. Nuevo año, nueva racha.</div>
+      </div>
+    </div>
+
+    <div class="ytHost" aria-hidden="true">
+      <div id="ytPlayer"></div>
+    </div>
+
+    <div id="soundDock" class="soundDock" data-playing="false">
+      <div class="soundDockInner">
+        <button id="soundToggle" class="soundBtn" type="button" aria-label="Control de música">
+          <span class="eq" aria-hidden="true">
+            <span class="eqBar"></span>
+            <span class="eqBar"></span>
+            <span class="eqBar"></span>
+          </span>
+          <i data-lucide="music" class="h-5 w-5 text-pink"></i>
+        </button>
+        <div class="min-w-0">
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-xs tracking-[0.18em] uppercase text-white/55">Nublado — Paulo Londra</div>
+            <div id="soundStatus" class="text-[10px] tracking-[0.16em] uppercase text-white/45">CARGANDO</div>
+          </div>
+          <div class="mt-1 grid gap-2">
+            <input id="soundVolume" type="range" min="0" max="100" value="55" class="w-full accent-pink" aria-label="Volumen" />
+            <div class="text-[11px] text-white/65">Soundtrack oficial de la mejor Ala-pívot</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      // ===== MAZE RUNNER LOGIC =====
+      const mazeBasketball = document.getElementById('mazeBasketball');
+      const mazeMagnifyingGlass = document.getElementById('mazeMagnifyingGlass');
+      const mazeSuccessMessage = document.getElementById('mazeSuccessMessage');
+      const mazeCanvas = document.getElementById('mazeCanvas');
+      const mazeWalls = document.querySelectorAll('.mazeWall');
+      
+      let isDragging = false;
+      let dragOffset = { x: 0, y: 0 };
+      let mazeCompleted = false;
+
+      // Función para verificar colisión con muros
+      function checkWallCollision(x, y, ballSize = 24) {
+        const ballRect = {
+          left: x,
+          right: x + ballSize,
+          top: y,
+          bottom: y + ballSize
+        };
+
+        for (const wall of mazeWalls) {
+          const wallRect = wall.getBoundingClientRect();
+          const canvasRect = mazeCanvas.getBoundingClientRect();
+          
+          // Convertir coordenadas del muro relativas al canvas
+          const wallRelativeRect = {
+            left: wallRect.left - canvasRect.left,
+            right: wallRect.right - canvasRect.left,
+            top: wallRect.top - canvasRect.top,
+            bottom: wallRect.bottom - canvasRect.top
+          };
+
+          // Verificar colisión
+          if (!(ballRect.left >= wallRelativeRect.right || 
+                ballRect.right <= wallRelativeRect.left || 
+                ballRect.top >= wallRelativeRect.bottom || 
+                ballRect.bottom <= wallRelativeRect.top)) {
+            return true; // Hay colisión
+          }
+        }
+        return false; // No hay colisión
+      }
+
+      // Función para verificar si el balón llegó a la lupa
+      function checkTargetReached(x, y, ballSize = 24) {
+        const targetRect = mazeMagnifyingGlass.getBoundingClientRect();
+        const canvasRect = mazeCanvas.getBoundingClientRect();
+        
+        // Convertir coordenadas de la lupa relativas al canvas
+        const targetRelativeRect = {
+          left: targetRect.left - canvasRect.left,
+          right: targetRect.right - canvasRect.left,
+          top: targetRect.top - canvasRect.top,
+          bottom: targetRect.bottom - canvasRect.top
+        };
+
+        const ballRect = {
+          left: x,
+          right: x + ballSize,
+          top: y,
+          bottom: y + ballSize
+        };
+
+        // Verificar si hay superposición
+        const overlap = !(ballRect.left >= targetRelativeRect.right || 
+                         ballRect.right <= targetRelativeRect.left || 
+                         ballRect.top >= targetRelativeRect.bottom || 
+                         ballRect.bottom <= targetRelativeRect.top);
+
+        return overlap;
+      }
+
+      // Eventos de arrastre
+      mazeBasketball.addEventListener('mousedown', (e) => {
+        if (mazeCompleted) return;
+        
+        isDragging = true;
+        const rect = mazeBasketball.getBoundingClientRect();
+        const canvasRect = mazeCanvas.getBoundingClientRect();
+        
+        dragOffset.x = e.clientX - rect.left;
+        dragOffset.y = e.clientY - rect.top;
+        
+        mazeBasketball.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || mazeCompleted) return;
+        
+        const canvasRect = mazeCanvas.getBoundingClientRect();
+        let newX = e.clientX - canvasRect.left - dragOffset.x;
+        let newY = e.clientY - canvasRect.top - dragOffset.y;
+        
+        // Limitar dentro del canvas
+        newX = Math.max(0, Math.min(newX, canvasRect.width - 24));
+        newY = Math.max(0, Math.min(newY, canvasRect.height - 24));
+        
+        // Verificar colisión con muros
+        if (!checkWallCollision(newX, newY)) {
+          mazeBasketball.style.left = newX + 'px';
+          mazeBasketball.style.top = newY + 'px';
+          
+          // Verificar si llegó al objetivo
+          if (checkTargetReached(newX, newY)) {
+            mazeCompleted = true;
+            mazeSuccessMessage.classList.add('show');
+            
+            // Efecto de celebración sutil
+            setTimeout(() => {
+              mazeSuccessMessage.classList.remove('show');
+            }, 3000);
+          }
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        mazeBasketball.style.cursor = 'grab';
+      });
+
+      // Prevenir arrastre fuera del canvas
+      mazeBasketball.addEventListener('dragstart', (e) => e.preventDefault());
+
+      // ===== CRIMINALÍSTICA & BÁSQUETBOL EXISTENTES =====
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const fpContainer = document.getElementById("fingerprints");
+      const fpCount = 22;
+      const fps = [];
+
+      function fingerprintSvg() {
+        return `
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="fp-stroke" d="M50 14c-16 0-29 13-29 29v8" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M50 22c-12 0-22 10-22 22v11" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M50 30c-8 0-15 7-15 15v14c0 8 7 15 15 15" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M50 30c8 0 15 7 15 15v14c0 8-7 15-15 15" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M50 18c16 0 29 13 29 29v8c0 13-8 25-20 29" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M23 58c0 18 12 33 27 37" stroke-width="3" stroke-linecap="round"/>
+            <path class="fp-stroke" d="M77 58c0 18-12 33-27 37" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `.trim();
+      }
+
+      function clamp(n, a, b) {
+        return Math.min(b, Math.max(a, n));
+      }
+
+      function makeFingerprints() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        fpContainer.innerHTML = "";
+        fps.length = 0;
+        for (let i = 0; i < fpCount; i++) {
+          const el = document.createElement("div");
+          el.className = "fingerprint";
+          const x = Math.random() * vw;
+          const y = Math.random() * vh;
+          const size = 46 + Math.random() * 58;
+          const rot = -22 + Math.random() * 44;
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+          el.style.setProperty("--fp-size", `${size}px`);
+          el.style.setProperty("--fp-rot", `${rot}deg`);
+          el.innerHTML = fingerprintSvg();
+          fpContainer.appendChild(el);
+          fps.push({ el, x, y, base: 0.02 + Math.random() * 0.03 });
+        }
+      }
+
+      makeFingerprints();
+
+      const uvCanvas = document.getElementById("uvCanvas");
+      const uvCtx = uvCanvas.getContext("2d");
+
+      function dpr() {
+        return Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      }
+
+      function resizeCanvas() {
+        const ratio = dpr();
+        uvCanvas.width = Math.floor(window.innerWidth * ratio);
+        uvCanvas.height = Math.floor(window.innerHeight * ratio);
+        uvCanvas.style.width = `${window.innerWidth}px`;
+        uvCanvas.style.height = `${window.innerHeight}px`;
+        uvCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+
+      const confettiCanvas = document.getElementById("confettiCanvas");
+      const confettiCtx = confettiCanvas.getContext("2d");
+
+      function resizeConfetti() {
+        const ratio = dpr();
+        confettiCanvas.width = Math.floor(window.innerWidth * ratio);
+        confettiCanvas.height = Math.floor(window.innerHeight * ratio);
+        confettiCanvas.style.width = `${window.innerWidth}px`;
+        confettiCanvas.style.height = `${window.innerHeight}px`;
+        confettiCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+
+      resizeCanvas();
+      resizeConfetti();
+
+      window.addEventListener("resize", () => {
+        makeFingerprints();
+        resizeCanvas();
+        resizeConfetti();
+      });
+
+      const trail = [];
+      const maxTrail = 42;
+      let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
+
+      function onMove(e) {
+        mouse = { x: e.clientX, y: e.clientY, active: true };
+        trail.push({ x: mouse.x, y: mouse.y, t: performance.now() });
+        while (trail.length > maxTrail) trail.shift();
+
+        const revealRadius = Math.min(220, Math.max(140, window.innerWidth * 0.16));
+        for (const fp of fps) {
+          const dx = fp.x - mouse.x;
+          const dy = fp.y - mouse.y;
+          const dist = Math.hypot(dx, dy);
+          const v = clamp(1 - dist / revealRadius, 0, 1);
+          fp.el.style.opacity = `${clamp(fp.base + v * 0.22, 0, 0.26)}`;
+        }
+      }
+
+      window.addEventListener("mousemove", onMove, { passive: true });
+      window.addEventListener(
+        "mouseleave",
+        () => {
+          mouse.active = false;
+          for (const fp of fps) fp.el.style.opacity = `${fp.base}`;
+        },
+        { passive: true }
+      );
+
+      function drawUv() {
+        const now = performance.now();
+        uvCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        if (!mouse.active || prefersReducedMotion) return;
+        uvCtx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < trail.length; i++) {
+          const p = trail[i];
+          const age = (now - p.t) / 850;
+          if (age > 1.1) continue;
+          const a = (1 - age) * 0.35;
+          const r = 10 + i * 0.45;
+          const grad = uvCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3.2);
+          grad.addColorStop(0, `rgba(0,183,255,${a})`);
+          grad.addColorStop(0.25, `rgba(255,43,214,${a * 0.55})`);
+          grad.addColorStop(0.55, `rgba(0,183,255,${a * 0.35})`);
+          grad.addColorStop(1, "rgba(0,183,255,0)");
+          uvCtx.fillStyle = grad;
+          uvCtx.beginPath();
+          uvCtx.arc(p.x, p.y, r * 3.2, 0, Math.PI * 2);
+          uvCtx.fill();
+        }
+        uvCtx.globalCompositeOperation = "source-over";
+        while (trail.length && now - trail[0].t > 1000) trail.shift();
+      }
+
+      (function loopUv() {
+        drawUv();
+        requestAnimationFrame(loopUv);
+      })();
+
+      const cdDays = document.getElementById("cdDays");
+      const cdHours = document.getElementById("cdHours");
+      const cdMins = document.getElementById("cdMins");
+      const cdSecs = document.getElementById("cdSecs");
+      const gameStatus = document.getElementById("gameStatus");
+      const scoreLeft = document.getElementById("scoreLeft");
+      const scoreRight = document.getElementById("scoreRight");
+
+      function pad2(n) {
+        return String(n).padStart(2, "0");
+      }
+
+      function updateCountdown() {
+        const now = new Date();
+        const target = new Date("2026-01-01T00:00:00");
+        const diff = target.getTime() - now.getTime();
+        if (diff <= 0) {
+          cdDays.textContent = "00";
+          cdHours.textContent = "00";
+          cdMins.textContent = "00";
+          cdSecs.textContent = "00";
+          gameStatus.textContent = "BUZZER";
+          scoreLeft.textContent = "7";
+          scoreRight.textContent = "7";
+          // Desbloquear automáticamente cuando el contador llega a cero
+          unlockMainContent();
+          return;
+        }
+        const totalSeconds = Math.floor(diff / 1000);
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+        cdDays.textContent = pad2(days);
+        cdHours.textContent = pad2(hours);
+        cdMins.textContent = pad2(mins);
+        cdSecs.textContent = pad2(secs);
+        
+        // Actualizar pantalla de espera
+        const waitDays = document.getElementById("waitDays");
+        const waitHours = document.getElementById("waitHours");
+        const waitMins = document.getElementById("waitMins");
+        const waitSecs = document.getElementById("waitSecs");
+        const waitStatus = document.getElementById("waitStatus");
+        
+        if (waitDays) waitDays.textContent = pad2(days);
+        if (waitHours) waitHours.textContent = pad2(hours);
+        if (waitMins) waitMins.textContent = pad2(mins);
+        if (waitSecs) waitSecs.textContent = pad2(secs);
+        
+        if (waitStatus) {
+          if (days <= 0 && hours <= 0) {
+            waitStatus.textContent = "Momento decisivo... CLUTCH";
+          } else if (days <= 7) {
+            waitStatus.textContent = "Última semana: preparando jugada final";
+          } else if (days <= 30) {
+            waitStatus.textContent = "Análisis en progreso: evidencia clasificada";
+          } else {
+            waitStatus.textContent = "Procesando evidencia...";
+          }
+        }
+        
+        gameStatus.textContent = days <= 0 && hours <= 0 ? "CLUTCH" : "EN JUEGO";
+        scoreLeft.textContent = "7";
+        scoreRight.textContent = "7";
+      }
+
+      const magnifyingGlass = document.getElementById("magnifyingGlass");
+      const basketball = document.getElementById("basketball");
+      const uvLight = document.getElementById("uvLight");
+      const forceOpen = document.getElementById("forceOpen");
+      const forensicBar = document.getElementById("forensicBar");
+      const forensicPercent = document.getElementById("forensicPercent");
+      let uvMode = false;
+      let scanningActive = false;
+
+      // Función para actualizar barra forense
+      function updateForensicBar() {
+        const now = new Date();
+        const target = new Date("2026-01-01T00:00:00");
+        const total = target.getTime() - new Date("2025-01-01T00:00:00").getTime();
+        const elapsed = now.getTime() - new Date("2025-01-01T00:00:00").getTime();
+        const percentage = Math.min(100, Math.max(0, (elapsed / total) * 100));
+        
+        forensicBar.style.width = `${percentage}%`;
+        forensicPercent.textContent = `${Math.round(percentage)}%`;
+      }
+
+      // Función para escanear huellas
+      magnifyingGlass.addEventListener("click", () => {
+        if (scanningActive) return;
+        scanningActive = true;
+        
+        // Crear efecto de escaneo
+        const scanOverlay = document.createElement("div");
+        scanOverlay.className = "fixed inset-0 z-[40] pointer-events-none";
+        scanOverlay.innerHTML = `
+          <div class="absolute inset-0 bg-uv/10 animate-pulse"></div>
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="text-6xl font-black text-pink animate-ping">2026</div>
+          </div>
+        `;
+        document.body.appendChild(scanOverlay);
+        
+        setTimeout(() => {
+          scanOverlay.remove();
+          scanningActive = false;
+        }, 2000);
+      });
+
+      // Función para lanzar balón
+      basketball.addEventListener("click", () => {
+        const ball = document.createElement("div");
+        ball.className = "fixed z-[35] w-16 h-16 rounded-full bg-gradient-to-br from-ember to-orange-600 shadow-lg";
+        ball.style.left = "100px";
+        ball.style.top = "100px";
+        ball.style.transition = "all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+        document.body.appendChild(ball);
+        
+        setTimeout(() => {
+          ball.style.transform = "translate(400px, 200px) rotate(720deg)";
+        }, 100);
+        
+        setTimeout(() => {
+          // Activar confeti rosa
+          spawnConfettiBurst();
+          confettiRun = true;
+          confettiStopAt = performance.now() + 1500;
+          requestAnimationFrame(stepConfetti);
+          ball.remove();
+        }, 2100);
+      });
+
+      // Función para luz UV
+      uvLight.addEventListener("click", () => {
+        uvMode = !uvMode;
+        uvLight.classList.toggle("bg-pink/40");
+        uvLight.classList.toggle("border-pink/60");
+        
+        const counterElements = document.querySelectorAll('#waitDays, #waitHours, #waitMins, #waitSecs');
+        counterElements.forEach(el => {
+          if (uvMode) {
+            el.classList.add("text-pink");
+            el.classList.remove("text-uv", "text-ember");
+            el.style.textShadow = "0 0 20px rgba(255, 43, 214, 0.8)";
+          } else {
+            el.style.textShadow = "";
+            // Restaurar colores originales
+            if (el.id === 'waitDays' || el.id === 'waitMins') {
+              el.classList.add("text-uv");
+              el.classList.remove("text-pink");
+            } else if (el.id === 'waitHours') {
+              el.classList.add("text-ember");
+              el.classList.remove("text-pink");
+            } else {
+              el.classList.add("text-pink");
+            }
+          }
+        });
+      });
+
+      // Función para forzar apertura
+      forceOpen.addEventListener("click", () => {
+        unlockMainContent();
+      });
+
+      function unlockMainContent() {
+        const mainContent = document.getElementById("mainContent");
+        const waitingScreen = document.getElementById("waitingScreen");
+        
+        if (mainContent && waitingScreen) {
+          // Efecto de zoom hacia afuera
+          waitingScreen.style.transition = "all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+          waitingScreen.style.transform = "scale(1.5)";
+          waitingScreen.style.opacity = "0";
+          
+          setTimeout(() => {
+            waitingScreen.style.display = "none";
+            mainContent.classList.remove("opacity-0");
+            mainContent.classList.add("opacity-100");
+            // Iniciar música automáticamente
+            startSoundtrack();
+          }, 1000);
+        }
+      }
+
+      updateCountdown();
+      setInterval(() => {
+        updateCountdown();
+        updateForensicBar();
+      }, 250);
+
+      let confetti = [];
+      let confettiRun = false;
+      let confettiStopAt = 0;
+
+      const soundDock = document.getElementById("soundDock");
+      const soundToggle = document.getElementById("soundToggle");
+      const soundVolume = document.getElementById("soundVolume");
+      const soundStatus = document.getElementById("soundStatus");
+      const isFileProtocol = window.location.protocol === "file:";
+      const soundtrackVideoCandidates = ["8s_edTC0FYM", "LnY-xDJK2HA", "-o4YkJqjyVI"];
+      let soundtrackVideoIndex = 0;
+
+      let ytPlayer = null;
+      let ytReady = false;
+      let audioWanted = false;
+      let userInteracted = false;
+
+      function setSoundPlayingState(isPlaying) {
+        soundDock.dataset.playing = String(!!isPlaying);
+        document.body.classList.toggle("sound-on", !!isPlaying);
+        if (isPlaying) soundStatus.textContent = "SONANDO";
+      }
+
+      function setSoundStatus(text) {
+        soundStatus.textContent = text;
+      }
+
+      function tryStartSoundtrack() {
+        audioWanted = true;
+        if (isFileProtocol) {
+          setSoundStatus("ABRE EN SERVIDOR");
+          return false;
+        }
+        if (!ytReady || !ytPlayer) {
+          setSoundStatus("CARGANDO");
+          return false;
+        }
+        try {
+          ytPlayer.unMute();
+          ytPlayer.setVolume(Number(soundVolume.value || 55));
+          ytPlayer.playVideo();
+          setSoundStatus("INICIANDO");
+          return true;
+        } catch (e) {
+          setSoundStatus("BLOQUEADO");
+          return false;
+        }
+      }
+
+      function startSoundtrack() {
+        audioWanted = true;
+        if (!ytReady || !ytPlayer) return;
+        try {
+          ytPlayer.unMute();
+          ytPlayer.setVolume(Number(soundVolume.value || 55));
+          ytPlayer.playVideo();
+          setSoundStatus("INICIANDO");
+        } catch (e) {
+          setSoundStatus("BLOQUEADO");
+          return;
+        }
+      }
+
+      function toggleSoundtrack() {
+        audioWanted = true;
+        if (!ytReady || !ytPlayer) return;
+        const state = ytPlayer.getPlayerState ? ytPlayer.getPlayerState() : -1;
+        if (state === 1) {
+          ytPlayer.pauseVideo();
+          return;
+        }
+        startSoundtrack();
+      }
+
+      function ensureSoundtrackByGesture() {
+        audioWanted = true;
+        userInteracted = true;
+        tryStartSoundtrack();
+      }
+
+      function bindInteractionStart() {
+        const handler = () => {
+          userInteracted = true;
+          audioWanted = true;
+          const attempted = tryStartSoundtrack();
+          if (!attempted) return;
+          setTimeout(() => {
+            if (!ytPlayer || !ytPlayer.getPlayerState) return;
+            const state = ytPlayer.getPlayerState();
+            if (state === 1) {
+              window.removeEventListener("pointerdown", handler);
+              return;
+            }
+            setSoundStatus("TOCA PLAY");
+          }, 350);
+        };
+        window.addEventListener("pointerdown", handler, { passive: true });
+      }
+
+      bindInteractionStart();
+
+      soundToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSoundtrack();
+      });
+
+      soundVolume.addEventListener("input", () => {
+        if (!ytReady || !ytPlayer) return;
+        try {
+          ytPlayer.setVolume(Number(soundVolume.value || 55));
+        } catch (e) {
+          return;
+        }
+      });
+
+      if (isFileProtocol) {
+        setSoundStatus("ABRE EN SERVIDOR");
+        soundToggle.setAttribute("disabled", "");
+        soundVolume.setAttribute("disabled", "");
+      } else {
+        const ytScript = document.createElement("script");
+        ytScript.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(ytScript);
+      }
+
+      window.onYouTubeIframeAPIReady = () => {
+        ytPlayer = new YT.Player("ytPlayer", {
+          height: "1",
+          width: "1",
+          videoId: soundtrackVideoCandidates[soundtrackVideoIndex],
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            modestbranding: 1,
+            playsinline: 1,
+            rel: 0,
+          },
+          events: {
+            onReady: () => {
+              ytReady = true;
+              try {
+                ytPlayer.setVolume(Number(soundVolume.value || 55));
+              } catch (e) {
+                return;
+              }
+              setSoundStatus(userInteracted ? "TOCA PLAY" : "LISTO");
+            },
+            onStateChange: (ev) => {
+              setSoundPlayingState(ev.data === YT.PlayerState.PLAYING);
+              if (ev.data === YT.PlayerState.PAUSED) setSoundStatus("PAUSA");
+              if (ev.data === YT.PlayerState.ENDED) setSoundStatus("FINAL");
+            },
+            onError: (ev) => {
+              const code = Number(ev.data);
+              if (code === 101 || code === 150 || code === 100 || code === 2) {
+                soundtrackVideoIndex = Math.min(soundtrackVideoIndex + 1, soundtrackVideoCandidates.length - 1);
+                const nextId = soundtrackVideoCandidates[soundtrackVideoIndex];
+                if (nextId && ytPlayer && ytPlayer.cueVideoById) {
+                  try {
+                    ytPlayer.cueVideoById({ videoId: nextId, startSeconds: 0 });
+                    setSoundStatus("FUENTE BLOQUEADA");
+                  } catch (e) {
+                    setSoundStatus("ERROR " + String(ev.data));
+                  }
+                  return;
+                }
+              }
+              setSoundStatus("ERROR " + String(ev.data));
+            },
+          },
+        });
+      };
+
+      function spawnConfettiBurst() {
+        const colors = [
+          "rgba(0,183,255,.95)",
+          "rgba(255,43,214,.95)",
+          "rgba(42,10,94,.95)",
+          "rgba(255,255,255,.95)",
+        ];
+        const count = prefersReducedMotion ? 80 : 220;
+        for (let i = 0; i < count; i++) {
+          const x = window.innerWidth * (0.35 + Math.random() * 0.3);
+          const y = window.innerHeight * (0.25 + Math.random() * 0.15);
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 2.2 + Math.random() * 6;
+          confetti.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 2,
+            w: 5 + Math.random() * 6,
+            h: 6 + Math.random() * 10,
+            r: Math.random() * Math.PI,
+            vr: -0.22 + Math.random() * 0.44,
+            c: colors[Math.floor(Math.random() * colors.length)],
+            life: 1,
+          });
+        }
+      }
+
+      function stepConfetti() {
+        if (!confettiRun) return;
+        confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        const now = performance.now();
+        for (const p of confetti) {
+          p.vy += 0.09;
+          p.vx *= 0.995;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.r += p.vr;
+          p.life -= 0.006;
+        }
+        confetti = confetti.filter((p) => p.life > 0 && p.y < window.innerHeight + 80);
+        for (const p of confetti) {
+          confettiCtx.save();
+          confettiCtx.translate(p.x, p.y);
+          confettiCtx.rotate(p.r);
+          confettiCtx.globalAlpha = clamp(p.life, 0, 1);
+          confettiCtx.fillStyle = p.c;
+          confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          confettiCtx.restore();
+        }
+        if (now > confettiStopAt && confetti.length === 0) {
+          confettiRun = false;
+          confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+          return;
+        }
+        requestAnimationFrame(stepConfetti);
+      }
+
+      const closeCaseBtn = document.getElementById("closeCase");
+      const hoopOverlay = document.getElementById("hoopOverlay");
+      const ball = document.getElementById("ball");
+      const rim = document.getElementById("rim");
+      const net = document.getElementById("net");
+
+      function playHoop() {
+        hoopOverlay.dataset.open = "true";
+        ball.style.opacity = "1";
+        ball.style.animation = "none";
+        rim.style.animation = "none";
+        net.style.animation = "none";
+        void ball.offsetWidth;
+        if (!prefersReducedMotion) {
+          ball.style.animation = "ballArc 1200ms cubic-bezier(.2,.85,.1,1) both";
+          rim.style.animation = "hoopBounce 900ms ease-out both";
+          setTimeout(() => {
+            net.style.animation = "net 450ms ease-in-out both";
+          }, 760);
+        }
+        setTimeout(
+          () => {
+            hoopOverlay.dataset.open = "false";
+            ball.style.opacity = "0";
+          },
+          prefersReducedMotion ? 900 : 1850
+        );
+      }
+
+      function fireCelebration() {
+        spawnConfettiBurst();
+        confettiRun = true;
+        confettiStopAt = performance.now() + (prefersReducedMotion ? 1200 : 2600);
+        requestAnimationFrame(stepConfetti);
+        playHoop();
+      }
+
+      closeCaseBtn.addEventListener("click", () => {
+        ensureSoundtrackByGesture();
+        fireCelebration();
+      });
+    </script>
+  </body>
+</html>
