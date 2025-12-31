@@ -775,6 +775,171 @@
       .puzzleSuccessMessage.show {
         transform: translate(-50%, -50%) scale(1);
       }
+      /* ===== FINAL CONCLUSION MODAL STYLES ===== */
+      .conclusionModal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        pointer-events: none;
+      }
+
+      .conclusionModal.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+
+      .conclusionBackdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+      }
+
+      .conclusionContainer {
+        position: relative;
+        max-width: 4xl;
+        width: 90vw;
+        max-height: 80vh;
+        border: 4px solid rgba(255, 223, 0, 0.8);
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(42, 10, 94, 0.95), rgba(0, 0, 0, 0.9));
+        box-shadow: 0 0 0 1px rgba(255, 223, 0, 0.3), 0 0 40px rgba(255, 223, 0, 0.2), 0 25px 50px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        transform: scale(0.8) translateY(20px);
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      .conclusionModal.show .conclusionContainer {
+        transform: scale(1) translateY(0);
+      }
+
+      .conclusionContainer::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        background: repeating-linear-gradient(
+          45deg,
+          rgba(255, 223, 0, 0.1) 0px,
+          rgba(255, 223, 0, 0.1) 20px,
+          transparent 20px,
+          transparent 40px
+        );
+        border-radius: 24px;
+        z-index: -1;
+        animation: policeTape 20s linear infinite;
+      }
+
+      @keyframes policeTape {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(40px); }
+      }
+
+      .conclusionHeader {
+        padding: 24px 32px 16px;
+        border-bottom: 2px solid rgba(255, 223, 0, 0.3);
+        text-align: center;
+      }
+
+      .conclusionTitle {
+        font-size: 24px;
+        font-weight: 900;
+        background: linear-gradient(135deg, rgba(255, 223, 0, 0.9), rgba(0, 255, 255, 0.9));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
+
+      .conclusionSubtitle {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .conclusionContent {
+        padding: 32px;
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+
+      .conclusionText {
+        font-size: 18px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: 'Courier New', monospace;
+        text-align: justify;
+        margin: 0;
+      }
+
+      .typewriter {
+        overflow: hidden;
+        white-space: pre-wrap;
+        animation: typewriter 8s steps(400, end) forwards;
+      }
+
+      @keyframes typewriter {
+        from { width: 0; }
+        to { width: 100%; }
+      }
+
+      .conclusionClose {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 223, 0, 0.5);
+        background: rgba(0, 0, 0, 0.5);
+        color: rgba(255, 223, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+      }
+
+      .conclusionClose:hover {
+        background: rgba(255, 223, 0, 0.2);
+        border-color: rgba(255, 223, 0, 0.8);
+        transform: scale(1.1);
+      }
+
+      /* ===== THEMATIC CONFETTI STYLES ===== */
+      .thematicConfetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 95;
+      }
+
+      .confettiPiece {
+        position: absolute;
+        font-size: 20px;
+        animation: confettiFall 3s linear forwards;
+      }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(-100px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body class="font-display text-white/90 overflow-x-hidden">
@@ -834,6 +999,14 @@
       <!-- Mini-puzles interactivos -->
       <button id="magnifyingGlass" class="fixed top-6 left-6 h-14 w-14 rounded-2xl border border-uv/30 bg-deep/40 flex items-center justify-center hover:border-uv/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Escanear huellas">
         <i data-lucide="search" class="h-7 w-7 text-uv group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="forceOpen" class="fixed top-24 left-6 h-14 w-14 rounded-2xl border border-white/20 bg-deep/40 flex items-center justify-center hover:border-white/40 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Forzar apertura de caso">
+        <i data-lucide="unlock" class="h-7 w-7 text-white/80 group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="uvLight" class="fixed bottom-6 left-6 h-14 w-14 rounded-2xl border border-pink/30 bg-deep/40 flex items-center justify-center hover:border-pink/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Luz UV">
+        <i data-lucide="zap" class="h-7 w-7 text-pink group-hover:scale-110 transition-transform"></i>
       </button>
       
       <button id="basketball" class="fixed top-6 right-6 h-14 w-14 rounded-2xl border border-ember/30 bg-deep/40 flex items-center justify-center hover:border-ember/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Lanzar balón">
@@ -1330,7 +1503,23 @@
       </section>
 
       <footer class="mx-auto max-w-6xl px-6 pb-16">
-        <div class="text-center text-xs tracking-[0.22em] uppercase text-white/45">Hecho con UV + corazón + clutch.</div>
+        <div class="text-center text-xs tracking-[0.22em] uppercase text-white/45 mb-8">Hecho con UV + corazón + clutch.</div>
+        
+        <!-- Botón Final de Conclusión -->
+        <div id="finalConclusionSection" class="hidden">
+          <button
+            id="closeCase2025"
+            class="group relative mx-auto inline-flex items-center justify-center gap-3 rounded-3xl px-8 py-6 font-extrabold tracking-wide text-lg bg-gradient-to-r from-purple-600 via-pink-500 to-pink-400 border-2 border-cyan-400 hover:border-cyan-300 transition-all duration-300 animate-bounce shadow-[0_0_30px_rgba(0,255,255,0.3),0_0_60px_rgba(147,51,234,0.3)] hover:shadow-[0_0_40px_rgba(0,255,255,0.5),0_0_80px_rgba(147,51,234,0.5)] transform hover:scale-105"
+            type="button"
+          >
+            <span class="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-600/20 to-pink-500/20 blur-xl"></span>
+            <span class="relative flex items-center gap-3">
+              <i data-lucide="unlock" class="h-6 w-6 text-cyan-300 group-hover:rotate-12 transition-transform"></i>
+              <span class="bg-gradient-to-r from-cyan-300 to-pink-300 bg-clip-text text-transparent">Cerrar Expediente 2025: Leer Conclusión Forense</span>
+              <i data-lucide="search" class="h-6 w-6 text-cyan-300 group-hover:rotate-12 transition-transform"></i>
+            </span>
+          </button>
+        </div>
       </footer>
     </main>
 
@@ -1351,6 +1540,28 @@
         <div class="absolute left-6 bottom-6 right-6 text-sm text-white/70">Caso cerrado. Nuevo año, nueva racha.</div>
       </div>
     </div>
+
+    <!-- Modal de Conclusión Forense -->
+    <div id="conclusionModal" class="conclusionModal">
+      <div class="conclusionBackdrop"></div>
+      <div class="conclusionContainer">
+        <button id="conclusionClose" class="conclusionClose" type="button">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+        
+        <div class="conclusionHeader">
+          <h2 class="conclusionTitle">Conclusión Forense 2025</h2>
+          <p class="conclusionSubtitle">Expediente #7 - Ala-Pívot - Caso Cerrado</p>
+        </div>
+        
+        <div class="conclusionContent">
+          <p id="conclusionText" class="conclusionText typewriter"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas para Confeti Temático -->
+    <canvas id="thematicConfettiCanvas" class="thematicConfetti"></canvas>
 
     <div class="ytHost" aria-hidden="true">
       <div id="ytPlayer"></div>
@@ -2208,6 +2419,149 @@
         fireCelebration();
       });
 
+      // ===== FINAL CONCLUSION FUNCTIONALITY =====
+      const closeCase2025Btn = document.getElementById("closeCase2025");
+      const conclusionModal = document.getElementById("conclusionModal");
+      const conclusionClose = document.getElementById("conclusionClose");
+      const conclusionText = document.getElementById("conclusionText");
+      const finalConclusionSection = document.getElementById("finalConclusionSection");
+      const thematicConfettiCanvas = document.getElementById("thematicConfettiCanvas");
+      const thematicCtx = thematicConfettiCanvas.getContext("2d");
+      
+      const conclusionMessage = `Hoy no te voy a desear un feliz año porque eso ya lo hace todo el mundo, hoy vengo a desearte que te atrevas, deseo que te quieras y que abraces todo lo que eres, te deseo locuras y anécdotas, te deseo que encuentres las ganas de salir adelante, te deseo viento y olas, para dejarte llevar, renovarte y empezar desde 0, te deseo aventuras y viajes, muchos viajes que te transporten y te regalen recuerdos increíbles, pero sobre todo eso te deseo tiempo, mucho tiempo para vivir esta vida al máximo sin guardarte nada, ten el valor de intentar y si fallas, te deseo que tengas el valor para volver a iniciar.`;
+      
+      let thematicConfetti = [];
+      let thematicConfettiRun = false;
+      let typewriterIndex = 0;
+      let typewriterInterval = null;
+      
+      // Configurar canvas de confeti temático
+      function resizeThematicConfetti() {
+        const ratio = dpr();
+        thematicConfettiCanvas.width = Math.floor(window.innerWidth * ratio);
+        thematicConfettiCanvas.height = Math.floor(window.innerHeight * ratio);
+        thematicConfettiCanvas.style.width = `${window.innerWidth}px`;
+        thematicConfettiCanvas.style.height = `${window.innerHeight}px`;
+        thematicCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+      
+      resizeThematicConfetti();
+      window.addEventListener("resize", resizeThematicConfetti);
+      
+      // Crear confeti temático
+      function createThematicConfetti() {
+        const symbols = ['🏀', '🥊', '🔍'];
+        const colors = [
+          "rgba(255, 43, 214, 0.9)",
+          "rgba(0, 183, 255, 0.9)",
+          "rgba(255, 223, 0, 0.9)",
+          "rgba(255, 106, 0, 0.9)"
+        ];
+        
+        for (let i = 0; i < 150; i++) {
+          setTimeout(() => {
+            const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            const confettiPiece = document.createElement('div');
+            confettiPiece.className = 'confettiPiece';
+            confettiPiece.textContent = symbol;
+            confettiPiece.style.left = Math.random() * 100 + '%';
+            confettiPiece.style.color = color;
+            confettiPiece.style.fontSize = (15 + Math.random() * 15) + 'px';
+            confettiPiece.style.animationDelay = Math.random() * 2 + 's';
+            confettiPiece.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+            
+            document.body.appendChild(confettiPiece);
+            
+            setTimeout(() => confettiPiece.remove(), 5000);
+          }, i * 50);
+        }
+      }
+      
+      // Efecto de escritura a máquina
+      function startTypewriter() {
+        typewriterIndex = 0;
+        conclusionText.textContent = '';
+        
+        typewriterInterval = setInterval(() => {
+          if (typewriterIndex < conclusionMessage.length) {
+            conclusionText.textContent += conclusionMessage[typewriterIndex];
+            typewriterIndex++;
+          } else {
+            clearInterval(typewriterInterval);
+            typewriterInterval = null;
+          }
+        }, 30);
+      }
+      
+      // Bajar volumen de la música
+      function lowerMusicVolume() {
+        if (ytReady && ytPlayer && isNewYearSong) {
+          try {
+            const currentVolume = ytPlayer.getVolume();
+            ytPlayer.setVolume(Math.max(20, currentVolume - 30));
+            
+            setTimeout(() => {
+              ytPlayer.setVolume(currentVolume);
+            }, 15000);
+          } catch (e) {
+            console.error('Error adjusting volume:', e);
+          }
+        }
+      }
+      
+      // Mostrar sección final cuando se desbloquea el contenido
+      function showFinalConclusionSection() {
+        if (finalConclusionSection) {
+          finalConclusionSection.classList.remove('hidden');
+          setTimeout(() => {
+            finalConclusionSection.style.opacity = '1';
+            finalConclusionSection.style.transform = 'translateY(0)';
+          }, 2000);
+        }
+      }
+      
+      // Event listener para el botón final
+      closeCase2025Btn?.addEventListener("click", () => {
+        conclusionModal.classList.add('show');
+        startTypewriter();
+        createThematicConfetti();
+        lowerMusicVolume();
+        
+        // Recrear iconos de Lucide
+        lucide.createIcons();
+      });
+      
+      // Event listener para cerrar el modal
+      conclusionClose?.addEventListener("click", () => {
+        conclusionModal.classList.remove('show');
+        if (typewriterInterval) {
+          clearInterval(typewriterInterval);
+          typewriterInterval = null;
+        }
+      });
+      
+      // Cerrar modal al hacer clic en el backdrop
+      conclusionModal?.addEventListener("click", (e) => {
+        if (e.target === conclusionModal || e.target.classList.contains('conclusionBackdrop')) {
+          conclusionModal.classList.remove('show');
+          if (typewriterInterval) {
+            clearInterval(typewriterInterval);
+            typewriterInterval = null;
+          }
+        }
+      });
+      
+      // Modificar función unlockMainContent para mostrar sección final
+      const originalUnlockMainContent = unlockMainContent;
+      unlockMainContent = function() {
+        originalUnlockMainContent();
+        setTimeout(() => {
+          showFinalConclusionSection();
+        }, 3000);
+      };
+      
       // ===== MAZE RUNNER PUZZLE FINAL INITIALIZATION =====
       // Inicializar puzle después de que todo esté cargado
       if (typeof initPuzzle === 'function') {
