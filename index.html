@@ -1001,9 +1001,6 @@
         <i data-lucide="search" class="h-7 w-7 text-uv group-hover:scale-110 transition-transform"></i>
       </button>
       
-      <button id="forceOpen" class="fixed top-24 left-6 h-14 w-14 rounded-2xl border border-white/20 bg-deep/40 flex items-center justify-center hover:border-white/40 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Forzar apertura de caso">
-        <i data-lucide="unlock" class="h-7 w-7 text-white/80 group-hover:scale-110 transition-transform"></i>
-      </button>
       
       <button id="uvLight" class="fixed bottom-6 left-6 h-14 w-14 rounded-2xl border border-pink/30 bg-deep/40 flex items-center justify-center hover:border-pink/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Luz UV">
         <i data-lucide="zap" class="h-7 w-7 text-pink group-hover:scale-110 transition-transform"></i>
@@ -1021,9 +1018,6 @@
         <i data-lucide="zap" class="h-7 w-7 text-pink group-hover:scale-110 transition-transform"></i>
       </button>
       
-      <button id="forceOpen" class="fixed bottom-6 right-6 h-14 w-14 rounded-2xl border border-white/20 bg-deep/40 flex items-center justify-center hover:border-white/40 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Forzar apertura de caso">
-        <i data-lucide="unlock" class="h-7 w-7 text-white/80 group-hover:scale-110 transition-transform"></i>
-      </button>
 
       <div class="max-w-4xl mx-auto px-6 text-center">
         <div class="mb-8">
@@ -1828,7 +1822,6 @@
       const magnifyingGlass = document.getElementById("magnifyingGlass");
       const basketball = document.getElementById("basketball");
       const uvLight = document.getElementById("uvLight");
-      const forceOpen = document.getElementById("forceOpen");
       const forensicBar = document.getElementById("forensicBar");
       const forensicPercent = document.getElementById("forensicPercent");
       let uvMode = false;
@@ -1943,10 +1936,6 @@
         }
       });
 
-      // Función para forzar apertura
-      forceOpen.addEventListener("click", () => {
-        unlockMainContent();
-      });
 
       function unlockMainContent() {
         const mainContent = document.getElementById("mainContent");
