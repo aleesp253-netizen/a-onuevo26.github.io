@@ -817,7 +817,7 @@
     </div>
 
     <!-- ===== MAZE RUNNER PUZZLE CONTAINER ===== -->
-    <div id="mazePuzzleContainer" class="mazePuzzleContainer">
+    <div id="mazePuzzleContainer" class="mazePuzzleContainer" style="display: none;">
       <div class="puzzleTitle">Puzle de Memoria - Sector 7</div>
       <div class="puzzleGrid" id="puzzleGrid">
         <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
@@ -838,6 +838,10 @@
       
       <button id="basketball" class="fixed top-6 right-6 h-14 w-14 rounded-2xl border border-ember/30 bg-deep/40 flex items-center justify-center hover:border-ember/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Lanzar balón">
         <i data-lucide="dribbble" class="h-7 w-7 text-ember group-hover:scale-110 transition-transform"></i>
+      </button>
+      
+      <button id="mazePuzzleBtn" class="fixed top-24 right-6 h-14 w-14 rounded-2xl border border-white/30 bg-deep/40 flex items-center justify-center hover:border-white/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Puzle de Maze Runner">
+        <i data-lucide="grid-3x3" class="h-7 w-7 text-white/80 group-hover:scale-110 transition-transform"></i>
       </button>
       
       <button id="uvLight" class="fixed bottom-6 left-6 h-14 w-14 rounded-2xl border border-pink/30 bg-deep/40 flex items-center justify-center hover:border-pink/50 hover:bg-deep/60 transition-all duration-300 group z-[31]" type="button" title="Luz UV">
@@ -1606,6 +1610,10 @@
         scoreRight.textContent = "7";
       }
 
+      // ===== MAZE RUNNER PUZZLE INITIALIZATION =====
+      const mazePuzzleBtn = document.getElementById("mazePuzzleBtn");
+
+      // ===== CRIMINALÍSTICA & BÁSQUETBOL EXISTENTES =====
       const magnifyingGlass = document.getElementById("magnifyingGlass");
       const basketball = document.getElementById("basketball");
       const uvLight = document.getElementById("uvLight");
@@ -1698,6 +1706,30 @@
             }
           }
         });
+      });
+
+      // ===== MAZE RUNNER PUZZLE FUNCTIONALITY =====
+      mazePuzzleBtn.addEventListener("click", () => {
+        const mazePuzzleContainer = document.getElementById("mazePuzzleContainer");
+        
+        // Toggle del puzle
+        if (mazePuzzleContainer.style.display === "none" || mazePuzzleContainer.style.display === "") {
+          mazePuzzleContainer.style.display = "block";
+          mazePuzzleContainer.style.opacity = "0";
+          mazePuzzleContainer.style.transform = "translateX(-50%) translateY(20px)";
+          
+          setTimeout(() => {
+            mazePuzzleContainer.style.opacity = "1";
+            mazePuzzleContainer.style.transform = "translateX(-50%) translateY(0)";
+          }, 100);
+        } else {
+          mazePuzzleContainer.style.opacity = "0";
+          mazePuzzleContainer.style.transform = "translateX(-50%) translateY(20px)";
+          
+          setTimeout(() => {
+            mazePuzzleContainer.style.display = "none";
+          }, 300);
+        }
       });
 
       // Función para forzar apertura
@@ -1980,9 +2012,6 @@
         }
       }
       
-      // Inicializar puzle al cargar
-      initPuzzle();
-
       function bindInteractionStart() {
         const handler = () => {
           userInteracted = true;
@@ -2178,6 +2207,12 @@
         ensureSoundtrackByGesture();
         fireCelebration();
       });
+
+      // ===== MAZE RUNNER PUZZLE FINAL INITIALIZATION =====
+      // Inicializar puzle después de que todo esté cargado
+      if (typeof initPuzzle === 'function') {
+        initPuzzle();
+      }
     </script>
   </body>
 </html>
